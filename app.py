@@ -4,6 +4,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import koreanize_matplotlib
 
+st.set_page_config(
+    page_title="HR 퇴직현황",
+    layout="wide"
+)
+
 st.title("HR 퇴직현황 대시보드")
 
 # 1. 데이터 불러오기
