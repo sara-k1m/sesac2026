@@ -126,7 +126,7 @@ with graph_col1:
     ax1.set_ylabel("")
     ax1.legend()
 
-    st.pyplot(fig1)
+    st.pyplot(fig1, use_container_width=True)
 
 # 연령대별
 with graph_col2:
