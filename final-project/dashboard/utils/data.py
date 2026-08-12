@@ -23,7 +23,7 @@ def load_data():
     data_path = (
         BASE_DIR
         / "data"
-        / "rent_2025_final_dashboard.parquet"
+        / "rent_2025_final_dashboard_clean.parquet"
     )
 
     df = pd.read_parquet(data_path)
