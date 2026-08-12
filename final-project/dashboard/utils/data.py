@@ -4,10 +4,6 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-
 DISTANCE_ORDER = [
     "250m 이하",
     "250m 초과 ~ 500m 이하",
@@ -20,13 +16,13 @@ DISTANCE_ORDER = [
 @st.cache_data
 def load_data():
 
-    data_path = (
-        BASE_DIR
-        / "data"
-        / "rent_2025_final_dashboard_clean.parquet"
-    )
+    # data_path = (
+    #     BASE_DIR
+    #     / "data"
+    #     / "rent_2025_final_dashboard_clean.parquet"
+    # )
 
-    df = pd.read_parquet(data_path)
+    df = pd.read_parquet("final-project/dashboard/data/rent_2025_dashboard_clean.parquet")
 
     # =====================================================
     # 계약일
