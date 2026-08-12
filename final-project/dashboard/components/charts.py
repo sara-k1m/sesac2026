@@ -5,7 +5,6 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 
-
 def render_summary(f, min_count):
 
     # =====================================================
@@ -28,7 +27,6 @@ def render_summary(f, min_count):
             district_rank["거래건수"] >= min_count
         ]
         .sort_values("평균월세")
-        .reset_index(drop=True)
     )
 
     station_rank = (
@@ -52,27 +50,54 @@ def render_summary(f, min_count):
             station_rank["거래건수"] >= min_count
         ]
         .sort_values("평균월세")
-        .reset_index(drop=True)
     )
 
     # =====================================================
-    # 섹션 제목
+    # 효율 점수
     # =====================================================
 
-    st.markdown(
-        "#### 💡 지금 조건에서 눈여겨볼 곳"
-    )
+    eff = station_rank.copy()
+
+    if (
+        len(eff) > 0
+        and eff["평균월세"].max() > 0
+        and eff["평균거리"].max() > 0
+    ):
+
+        eff["효율점수"] = (
+            (
+                eff["평균월세"]
+                / eff["평균월세"].max()
+            ) * 0.6
+            +
+            (
+                eff["평균거리"]
+                / eff["평균거리"].max()
+            ) * 0.4
+        )
+
+        eff = (
+            eff
+            .sort_values("효율점수")
+            .reset_index(drop=True)
+        )
+
+    # =====================================================
+    # 추천 헤더
+    # =====================================================
+
+    st.markdown("#### 💡 추천")
 
     st.caption(
-        f"거래 건수 {min_count}건 미만인 지역과 역은 "
-        "통계 신뢰도를 고려해 추천에서 제외했습니다."
+        f"거래 건수가 {min_count}건 미만인 지역·역은 "
+        "통계 신뢰도를 위해 제외했습니다."
     )
 
     # =====================================================
-    # 추천 카드
+    # 핵심 추천 3개
     # =====================================================
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
 
     # -----------------------------------------------------
     # 가장 저렴한 지역
@@ -80,63 +105,22 @@ def render_summary(f, min_count):
 
     with col1:
 
+        st.caption("🏙️ 가장 저렴한 지역")
+
         if len(district_rank) > 0:
 
             best_district = district_rank.iloc[0]
 
-            st.markdown(
-                f"""
-                <div style="
-                    padding: 1.2rem 1.3rem;
-                    border: 1px solid #E5E7EB;
-                    border-radius: 14px;
-                    background: #FFFFFF;
-                ">
-
-                    <div style="
-                        color: #6B7280;
-                        font-size: 0.85rem;
-                        font-weight: 600;
-                        margin-bottom: 0.45rem;
-                    ">
-                        🏙️ 가장 저렴한 지역
-                    </div>
-
-                    <div style="
-                        color: #111827;
-                        font-size: 1.25rem;
-                        font-weight: 750;
-                        margin-bottom: 0.3rem;
-                    ">
-                        {best_district["자치구명"]}
-                    </div>
-
-                    <div style="
-                        color: #2563EB;
-                        font-size: 1rem;
-                        font-weight: 700;
-                    ">
-                        평균 월세 {best_district["평균월세"]:.1f}만원
-                    </div>
-
-                    <div style="
-                        color: #9CA3AF;
-                        font-size: 0.8rem;
-                        margin-top: 0.35rem;
-                    ">
-                        거래 {int(best_district["거래건수"]):,}건
-                    </div>
-
-                </div>
-                """,
-                unsafe_allow_html=True,
+            st.metric(
+                label=best_district["자치구명"],
+                value=f"{best_district['평균월세']:.1f}만원",
+                delta=f"거래 {int(best_district['거래건수']):,}건",
+                delta_color="off",
             )
 
         else:
 
-            st.info(
-                "조건을 만족하는 자치구가 없습니다."
-            )
+            st.info("데이터 없음")
 
     # -----------------------------------------------------
     # 가장 저렴한 역
@@ -144,251 +128,201 @@ def render_summary(f, min_count):
 
     with col2:
 
+        st.caption("🚇 가장 저렴한 역")
+
         if len(station_rank) > 0:
 
             best_station = station_rank.iloc[0]
 
-            st.markdown(
-                f"""
-                <div style="
-                    padding: 1.2rem 1.3rem;
-                    border: 1px solid #E5E7EB;
-                    border-radius: 14px;
-                    background: #FFFFFF;
-                ">
-
-                    <div style="
-                        color: #6B7280;
-                        font-size: 0.85rem;
-                        font-weight: 600;
-                        margin-bottom: 0.45rem;
-                    ">
-                        🚇 가장 저렴한 역
-                    </div>
-
-                    <div style="
-                        color: #111827;
-                        font-size: 1.25rem;
-                        font-weight: 750;
-                        margin-bottom: 0.3rem;
-                    ">
-                        {best_station["최근접역"]}
-                    </div>
-
-                    <div style="
-                        color: #2563EB;
-                        font-size: 1rem;
-                        font-weight: 700;
-                    ">
-                        평균 월세 {best_station["평균월세"]:.1f}만원
-                    </div>
-
-                    <div style="
-                        color: #9CA3AF;
-                        font-size: 0.8rem;
-                        margin-top: 0.35rem;
-                    ">
-                        {best_station["최근접역_호선"]}
-                        · 역까지 평균 {best_station["평균거리"]:.0f}m
-                    </div>
-
-                </div>
-                """,
-                unsafe_allow_html=True,
+            st.metric(
+                label=best_station["최근접역"],
+                value=f"{best_station['평균월세']:.1f}만원",
+                delta=f"거래 {int(best_station['거래건수']):,}건",
+                delta_color="off",
             )
 
         else:
+
+            st.info("데이터 없음")
+
+    # -----------------------------------------------------
+    # 가성비 1위
+    # -----------------------------------------------------
+
+    with col3:
+
+        st.caption("⭐ 가성비 1위")
+
+        if len(eff) > 0:
+
+            best_eff = eff.iloc[0]
+
+            st.metric(
+                label=best_eff["최근접역"],
+                value=f"{best_eff['평균월세']:.1f}만원",
+                delta=(
+                    f"역까지 "
+                    f"{best_eff['평균거리']:.0f}m"
+                ),
+                delta_color="off",
+            )
+
+        else:
+
+            st.info("데이터 없음")
+
+    # =====================================================
+    # TOP 5
+    # =====================================================
+
+    st.markdown("")
+
+    col1, col2 = st.columns(2)
+
+    # =====================================================
+    # 자치구 TOP 5
+    # =====================================================
+
+    with col1:
+
+        st.markdown("##### 🏙️ 자치구 TOP 5")
+
+        if len(district_rank) == 0:
+
+            st.info(
+                "조건을 만족하는 자치구가 없습니다."
+            )
+
+        else:
+
+            district_display = (
+                district_rank
+                .head(5)
+                [
+                    [
+                        "자치구명",
+                        "거래건수",
+                        "평균월세",
+                    ]
+                ]
+                .copy()
+            )
+
+            district_display.columns = [
+                "지역",
+                "거래",
+                "평균 월세",
+            ]
+
+            st.dataframe(
+                district_display.style.format(
+                    {
+                        "거래": "{:,.0f}",
+                        "평균 월세": "{:.1f}만원",
+                    }
+                ),
+                hide_index=True,
+                use_container_width=True,
+            )
+
+    # =====================================================
+    # 역 TOP 5
+    # =====================================================
+
+    with col2:
+
+        st.markdown("##### 🚇 지하철역 TOP 5")
+
+        if len(station_rank) == 0:
 
             st.info(
                 "조건을 만족하는 역이 없습니다."
             )
 
-    # =====================================================
-    # 가성비 추천
-    # =====================================================
+        else:
 
-    if len(station_rank) > 0:
-
-        eff = station_rank.copy()
-
-        max_rent = eff["평균월세"].max()
-        max_distance = eff["평균거리"].max()
-
-        if max_rent > 0 and max_distance > 0:
-
-            eff["효율점수"] = (
-                (
-                    eff["평균월세"]
-                    / max_rent
-                ) * 0.6
-                +
-                (
-                    eff["평균거리"]
-                    / max_distance
-                ) * 0.4
-            )
-
-            eff = (
-                eff
-                .sort_values("효율점수")
-                .reset_index(drop=True)
-            )
-
-            best_eff = eff.iloc[0]
-
-            st.markdown(
-                "<div style='height: 1rem;'></div>",
-                unsafe_allow_html=True,
-            )
-
-            st.markdown(
-                f"""
-                <div style="
-                    padding: 1.25rem 1.3rem;
-                    border: 1px solid #DBEAFE;
-                    border-radius: 14px;
-                    background: #F8FBFF;
-                ">
-
-                    <div style="
-                        color: #2563EB;
-                        font-size: 0.85rem;
-                        font-weight: 700;
-                        margin-bottom: 0.45rem;
-                    ">
-                        ⭐ 가성비 추천
-                    </div>
-
-                    <div style="
-                        color: #111827;
-                        font-size: 1.2rem;
-                        font-weight: 750;
-                    ">
-                        {best_eff["최근접역"]}
-                    </div>
-
-                    <div style="
-                        color: #6B7280;
-                        font-size: 0.85rem;
-                        margin-top: 0.3rem;
-                    ">
-                        {best_eff["최근접역_호선"]}
-                        · 평균 월세 {best_eff["평균월세"]:.1f}만원
-                        · 역까지 {best_eff["평균거리"]:.0f}m
-                    </div>
-
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-
-            # =================================================
-            # 전체 순위
-            # =================================================
-
-            with st.expander(
-                "전체 추천 순위 보기"
-            ):
-
-                st.dataframe(
-                    eff[
-                        [
-                            "최근접역",
-                            "최근접역_호선",
-                            "거래건수",
-                            "평균월세",
-                            "평균거리",
-                        ]
-                    ].head(10).style.format(
-                        {
-                            "평균월세": "{:.1f}",
-                            "평균거리": "{:.0f}",
-                        }
-                    ),
-                    hide_index=True,
-                    use_container_width=True,
-                )
-
-    # =====================================================
-    # 자치구 / 역 전체 순위
-    # =====================================================
-
-    with st.expander(
-        "자치구 · 역 전체 순위 보기"
-    ):
-
-        rank_col1, rank_col2 = st.columns(2)
-
-        # -------------------------------------------------
-        # 자치구
-        # -------------------------------------------------
-
-        with rank_col1:
-
-            st.markdown("**자치구 순위**")
-
-            if len(district_rank) == 0:
-
-                st.info(
-                    "표시할 데이터가 없습니다."
-                )
-
-            else:
-
-                st.dataframe(
-                    district_rank[
-                        [
-                            "자치구명",
-                            "거래건수",
-                            "평균월세",
-                            "평균보증금",
-                        ]
+            station_display = (
+                station_rank
+                .head(5)
+                [
+                    [
+                        "최근접역",
+                        "최근접역_호선",
+                        "거래건수",
+                        "평균월세",
                     ]
-                    .head(10)
-                    .style.format(
-                        {
-                            "평균월세": "{:.1f}",
-                            "평균보증금": "{:,.0f}",
-                        }
-                    ),
-                    hide_index=True,
-                    use_container_width=True,
-                )
+                ]
+                .copy()
+            )
 
-        # -------------------------------------------------
-        # 역
-        # -------------------------------------------------
+            station_display.columns = [
+                "역",
+                "노선",
+                "거래",
+                "평균 월세",
+            ]
 
-        with rank_col2:
+            st.dataframe(
+                station_display.style.format(
+                    {
+                        "거래": "{:,.0f}",
+                        "평균 월세": "{:.1f}만원",
+                    }
+                ),
+                hide_index=True,
+                use_container_width=True,
+            )
 
-            st.markdown("**지하철역 순위**")
+    # =====================================================
+    # 가성비 TOP 5
+    # =====================================================
 
-            if len(station_rank) == 0:
+    st.markdown("##### ⭐ 가성비 TOP 5")
 
-                st.info(
-                    "표시할 데이터가 없습니다."
-                )
+    st.caption(
+        "평균 월세 60% + 역까지 거리 40%를 기준으로 계산했습니다."
+    )
 
-            else:
+    if len(eff) == 0:
 
-                st.dataframe(
-                    station_rank[
-                        [
-                            "최근접역",
-                            "최근접역_호선",
-                            "거래건수",
-                            "평균월세",
-                        ]
-                    ]
-                    .head(10)
-                    .style.format(
-                        {
-                            "평균월세": "{:.1f}",
-                        }
-                    ),
-                    hide_index=True,
-                    use_container_width=True,
-                )
+        st.info("표시할 데이터가 없습니다.")
+
+    else:
+
+        eff_display = (
+            eff
+            .head(5)
+            [
+                [
+                    "최근접역",
+                    "최근접역_호선",
+                    "거래건수",
+                    "평균월세",
+                    "평균거리",
+                ]
+            ]
+            .copy()
+        )
+
+        eff_display.columns = [
+            "역",
+            "노선",
+            "거래",
+            "평균 월세",
+            "역까지",
+        ]
+
+        st.dataframe(
+            eff_display.style.format(
+                {
+                    "거래": "{:,.0f}",
+                    "평균 월세": "{:.1f}만원",
+                    "역까지": "{:,.0f}m",
+                }
+            ),
+            hide_index=True,
+            use_container_width=True,
+        )
 
 
 # =========================================================
