@@ -6,6 +6,7 @@ import streamlit as st
 import pandas as pd
 
 from utils.filtering import apply_filters
+from components.interest_rate import render_interest_rate
 from components.sidebar import render_sidebar
 from components.kpi import render_kpi
 from components.charts import (
@@ -220,6 +221,8 @@ def render_dashboard(
     )
 
     render_kpi(f)
+
+    render_interest_rate()
 
     st.markdown("")
 
