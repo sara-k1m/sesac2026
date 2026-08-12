@@ -229,17 +229,39 @@ def render_kpi(f, df):
     # 평균 보증금
     # =================================================
 
+    deposit_median = f["보증금(만원)"].median()
+
     with k3:
 
+        # 현재 조건의 보증금 중앙값
+        current_deposit = f["보증금(만원)"].median()
+    
+        # 전체 데이터의 보증금 중앙값
+        overall_deposit = df["보증금(만원)"].median()
+    
+        # 전체 중앙값 대비 차이
+        if overall_deposit > 0:
+    
+            deposit_change = (
+                (current_deposit - overall_deposit)
+                / overall_deposit
+                * 100
+            )
+    
+        else:
+    
+            deposit_change = None
+    
         st.metric(
-            "평균 보증금",
+            "보증금 중앙값",
             f"{current_deposit:,.0f}만원",
             delta=(
                 f"{deposit_change:+.1f}%"
                 if deposit_change is not None
                 else None
             ),
-            help="서울 전체 평균 보증금 대비 차이입니다.",
+            delta_color="inverse",
+            help="서울 전체 보증금 중앙값 대비 차이입니다.",
         )
 
     # =================================================
