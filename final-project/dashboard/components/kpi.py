@@ -14,7 +14,7 @@ PYEONG_M2 = 3.305785
 
 
 # =====================================================
-# 전체 대비 증감률 계산
+# 전체 대비 차이 계산
 # =====================================================
 
 def calc_change(current, overall):
@@ -23,7 +23,11 @@ def calc_change(current, overall):
     몇 % 높은지 / 낮은지 계산
     """
 
-    if overall is None or overall == 0:
+    if (
+        current is None
+        or overall is None
+        or overall == 0
+    ):
         return None
 
     return (
@@ -44,7 +48,7 @@ def render_kpi(f, df):
     """
 
     # =================================================
-    # 전체 평균 계산
+    # 전체 데이터 기준값
     # =================================================
 
     # ---------------------------------------------
@@ -64,13 +68,13 @@ def render_kpi(f, df):
     )
 
     # ---------------------------------------------
-    # 전체 평균 보증금
+    # 전체 보증금 중앙값
     # ---------------------------------------------
 
-    overall_deposit = (
+    overall_deposit_median = (
         df["보증금(만원)"]
         .dropna()
-        .mean()
+        .median()
     )
 
     # ---------------------------------------------
@@ -102,6 +106,7 @@ def render_kpi(f, df):
 
         overall_rent_per_pyeong = None
 
+
     # =================================================
     # 현재 조건 값
     # =================================================
@@ -123,13 +128,13 @@ def render_kpi(f, df):
     )
 
     # ---------------------------------------------
-    # 평균 보증금
+    # 보증금 중앙값
     # ---------------------------------------------
 
-    current_deposit = (
+    current_deposit_median = (
         f["보증금(만원)"]
         .dropna()
-        .mean()
+        .median()
     )
 
     # ---------------------------------------------
@@ -161,14 +166,10 @@ def render_kpi(f, df):
 
         current_rent_per_pyeong = None
 
+
     # =================================================
     # 전체 대비 변화율
     # =================================================
-
-    count_change = calc_change(
-        current_count,
-        overall_count,
-    )
 
     rent_change = calc_change(
         current_rent,
@@ -176,8 +177,8 @@ def render_kpi(f, df):
     )
 
     deposit_change = calc_change(
-        current_deposit,
-        overall_deposit,
+        current_deposit_median,
+        overall_deposit_median,
     )
 
     rent_per_pyeong_change = calc_change(
@@ -185,11 +186,30 @@ def render_kpi(f, df):
         overall_rent_per_pyeong,
     )
 
+
+    # =================================================
+    # 전체 거래 중 현재 조건 비중
+    # =================================================
+
+    if overall_count > 0:
+
+        count_ratio = (
+            current_count
+            / overall_count
+            * 100
+        )
+
+    else:
+
+        count_ratio = None
+
+
     # =================================================
     # KPI 표시
     # =================================================
 
     k1, k2, k3, k4 = st.columns(4)
+
 
     # =================================================
     # 거래 건수
@@ -200,13 +220,14 @@ def render_kpi(f, df):
         st.metric(
             "거래 건수",
             f"{current_count:,}건",
-            delta=(
-                f"{count_change:+.1f}%"
-                if count_change is not None
-                else None
-            ),
-            help="서울 전체 데이터의 거래 건수와 비교한 값입니다.",
         )
+
+        if count_ratio is not None:
+
+            st.caption(
+                f"전체 거래의 {count_ratio:.1f}%"
+            )
+
 
     # =================================================
     # 평균 월세
@@ -222,39 +243,20 @@ def render_kpi(f, df):
                 if rent_change is not None
                 else None
             ),
+            delta_color="inverse",
             help="서울 전체 평균 월세 대비 차이입니다.",
         )
 
-    # =================================================
-    # 평균 보증금
-    # =================================================
 
-    deposit_median = f["보증금(만원)"].median()
+    # =================================================
+    # 보증금 중앙값
+    # =================================================
 
     with k3:
 
-        # 현재 조건의 보증금 중앙값
-        current_deposit = f["보증금(만원)"].median()
-    
-        # 전체 데이터의 보증금 중앙값
-        overall_deposit = df["보증금(만원)"].median()
-    
-        # 전체 중앙값 대비 차이
-        if overall_deposit > 0:
-    
-            deposit_change = (
-                (current_deposit - overall_deposit)
-                / overall_deposit
-                * 100
-            )
-    
-        else:
-    
-            deposit_change = None
-    
         st.metric(
             "보증금 중앙값",
-            f"{current_deposit:,.0f}만원",
+            f"{current_deposit_median:,.0f}만원",
             delta=(
                 f"{deposit_change:+.1f}%"
                 if deposit_change is not None
@@ -263,6 +265,7 @@ def render_kpi(f, df):
             delta_color="inverse",
             help="서울 전체 보증금 중앙값 대비 차이입니다.",
         )
+
 
     # =================================================
     # 평당 월세
@@ -280,6 +283,7 @@ def render_kpi(f, df):
                     if rent_per_pyeong_change is not None
                     else None
                 ),
+                delta_color="inverse",
                 help="서울 전체 평균 평당 월세 대비 차이입니다.",
             )
 
