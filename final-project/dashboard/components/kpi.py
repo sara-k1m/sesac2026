@@ -220,13 +220,14 @@ def render_kpi(f, df):
         st.metric(
             "거래 건수",
             f"{current_count:,}건",
-        )
-
-        if count_ratio is not None:
-
-            st.caption(
+            delta=(
                 f"전체 거래의 {count_ratio:.1f}%"
-            )
+                if count_ratio is not None
+                else None
+            ),
+            delta_color="off",
+            help="서울 전체 거래 중 현재 선택 조건에 해당하는 거래의 비중입니다.",
+        )
 
 
     # =================================================
