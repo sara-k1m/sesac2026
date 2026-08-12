@@ -1,11 +1,11 @@
 # utils/data.py
-# -*- coding: utf-8 -*-
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 
 
-DATA_PATH = "data/rent_2025_final_dashboard.csv"
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 DISTANCE_ORDER = [
@@ -20,23 +20,28 @@ DISTANCE_ORDER = [
 @st.cache_data
 def load_data():
 
-    df = pd.read_csv(
-        DATA_PATH,
-        encoding="utf-8-sig",
+    data_path = (
+        BASE_DIR
+        / "data"
+        / "rent_2025_final_dashboard.parquet"
     )
+
+    df = pd.read_parquet(data_path)
 
     # =====================================================
     # 계약일
     # =====================================================
 
-    df["계약일"] = pd.to_datetime(
-        df["계약일"],
-        format="%Y%m%d",
-        errors="coerce",
-    )
+    if "계약일" in df.columns:
+
+        df["계약일"] = pd.to_datetime(
+            df["계약일"],
+            format="%Y%m%d",
+            errors="coerce"
+        )
 
     # =====================================================
-    # 숫자형 컬럼
+    # 숫자형
     # =====================================================
 
     numeric_cols = [
@@ -57,11 +62,11 @@ def load_data():
 
             df[col] = pd.to_numeric(
                 df[col],
-                errors="coerce",
+                errors="coerce"
             )
 
     # =====================================================
-    # 문자형 컬럼
+    # 문자형
     # =====================================================
 
     string_cols = [
@@ -84,7 +89,7 @@ def load_data():
             )
 
     # =====================================================
-    # 거리구간 순서
+    # 거리구간
     # =====================================================
 
     if "거리구간" in df.columns:
@@ -92,7 +97,7 @@ def load_data():
         df["거리구간"] = pd.Categorical(
             df["거리구간"],
             categories=DISTANCE_ORDER,
-            ordered=True,
+            ordered=True
         )
 
     return df
