@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import streamlit as st
-
+from pathlib import Path
 from utils.data import load_data, get_filter_options
 from views.start import render_start
 from views.filters import render_filters
@@ -25,11 +25,18 @@ st.set_page_config(
 # CSS
 # =========================================================
 
+BASE_DIR = Path(__file__).resolve().parent
+
+
 def load_css():
-    with open("assets/style.css", "r", encoding="utf-8") as f:
+
+    css_path = BASE_DIR / "assets" / "style.css"
+
+    with open(css_path, "r", encoding="utf-8") as f:
+
         st.markdown(
             f"<style>{f.read()}</style>",
-            unsafe_allow_html=True,
+            unsafe_allow_html=True
         )
 
 
