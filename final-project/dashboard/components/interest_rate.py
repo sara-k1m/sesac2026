@@ -22,7 +22,7 @@ def load_interest_rate():
 
     df = pd.read_csv(
         data_path,
-        encoding="utf-8-sig"
+        encoding="cp949"
     )
 
     # =====================================================
