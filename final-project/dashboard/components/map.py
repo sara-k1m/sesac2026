@@ -30,12 +30,12 @@ SUBWAY_STATIONS_PATH = (
 
 
 # =========================================================
-# Tooltip
+# 전체 Tooltip
 #
 # 중요:
-# PyDeck에서는 Layer별 tooltip을 사용하지 않고
-# 각 데이터에 tooltip_html을 넣은 뒤
-# Deck 전체 tooltip에서 {tooltip_html}을 출력합니다.
+# Layer마다 tooltip을 넣지 않고
+# Deck 전체에 하나만 설정합니다.
+# 각 데이터에는 tooltip_html 컬럼을 넣습니다.
 # =========================================================
 
 DECK_TOOLTIP = {
@@ -45,8 +45,6 @@ DECK_TOOLTIP = {
         "color": "#172033",
         "fontSize": "13px",
         "padding": "10px",
-        "borderRadius": "6px",
-        "boxShadow": "0 2px 8px rgba(0,0,0,0.15)",
     },
 }
 
@@ -143,7 +141,7 @@ def _build_color_palette(line_groups):
 
 
 # =========================================================
-# 값 표시용 함수
+# 표시용 값
 # =========================================================
 
 def _display_value(value):
@@ -155,7 +153,7 @@ def _display_value(value):
 
 
 # =========================================================
-# 거래 Tooltip 생성
+# 거래 Tooltip
 # =========================================================
 
 def _make_transaction_tooltip(row):
@@ -188,28 +186,25 @@ def _make_transaction_tooltip(row):
         row.get("최근접역_거리(m)")
     )
 
+    # -----------------------------------------------------
+    # 복잡한 div / CSS를 사용하지 않습니다.
+    # PyDeck Tooltip 호환성을 위해 단순 HTML만 사용합니다.
+    # -----------------------------------------------------
+
     return (
-        "<div>"
-        "<div style='font-size:14px;"
-        "font-weight:700;"
-        "margin-bottom:6px;'>"
-        "🏠 거래 정보"
-        "</div>"
-
-        f"<div>자치구: {district}</div>"
-        f"<div>최근접역: {station}</div>"
-        f"<div>호선: {line}</div>"
-        f"<div>월세: {rent}만원</div>"
-        f"<div>보증금: {deposit}만원</div>"
-        f"<div>면적: {area}㎡</div>"
-        f"<div>역까지 거리: {distance}m</div>"
-
-        "</div>"
+        "<b>🏠 거래 정보</b><br/>"
+        f"자치구: {district}<br/>"
+        f"최근접역: {station}<br/>"
+        f"호선: {line}<br/>"
+        f"월세: {rent}만원<br/>"
+        f"보증금: {deposit}만원<br/>"
+        f"면적: {area}㎡<br/>"
+        f"역까지 거리: {distance}m"
     )
 
 
 # =========================================================
-# 역 Tooltip 생성
+# 역 Tooltip
 # =========================================================
 
 def _make_station_tooltip(
@@ -218,19 +213,13 @@ def _make_station_tooltip(
 ):
 
     return (
-        "<div>"
-        "<div style='font-size:14px;"
-        "font-weight:700;"
-        "margin-bottom:5px;'>"
-        f"🚇 {station}"
-        "</div>"
-        f"<div>호선: {lines}</div>"
-        "</div>"
+        f"<b>🚇 {station}</b><br/>"
+        f"호선: {lines}"
     )
 
 
 # =========================================================
-# 자치구 Tooltip 생성
+# 자치구 Tooltip
 # =========================================================
 
 def _make_district_tooltip(
@@ -238,14 +227,8 @@ def _make_district_tooltip(
 ):
 
     return (
-        "<div>"
-        "<div style='font-size:14px;"
-        "font-weight:700;"
-        "margin-bottom:5px;'>"
-        "📍 자치구"
-        "</div>"
-        f"<div>자치구: {district_name}</div>"
-        "</div>"
+        "<b>📍 자치구</b><br/>"
+        f"자치구: {district_name}"
     )
 
 
@@ -318,7 +301,9 @@ def _load_subway_stations(
 
         st.error(
             "지하철역 CSV에 다음 컬럼이 없습니다: "
-            + ", ".join(missing_columns)
+            + ", ".join(
+                missing_columns
+            )
         )
 
         return pd.DataFrame(
@@ -369,7 +354,7 @@ def _load_subway_stations(
     )
 
     # =====================================================
-    # 서울 GeoJSON
+    # 서울시 GeoJSON
     # =====================================================
 
     if geojson_path.exists():
@@ -483,7 +468,7 @@ def _filter_subway_by_line(
     ).strip()
 
     # -----------------------------------------------------
-    # 우선 정확히 일치
+    # 정확히 일치하는 호선 우선
     # -----------------------------------------------------
 
     exact = subway[
@@ -496,7 +481,7 @@ def _filter_subway_by_line(
         return exact
 
     # -----------------------------------------------------
-    # 정확히 일치하는 값이 없으면 포함 검색
+    # 없으면 포함 검색
     # -----------------------------------------------------
 
     filtered = subway[
@@ -530,7 +515,6 @@ def _prepare_station_display_data(
                 "lon",
                 "lines",
                 "line_count",
-                "color",
                 "color_r",
                 "color_g",
                 "color_b",
@@ -580,7 +564,9 @@ def _prepare_station_display_data(
                 "lon": lon,
                 "lines": ", ".join(lines),
                 "line_count": len(lines),
-                "color": color,
+                "color_r": color[0],
+                "color_g": color[1],
+                "color_b": color[2],
                 "tooltip_html": (
                     _make_station_tooltip(
                         station,
@@ -590,35 +576,9 @@ def _prepare_station_display_data(
             }
         )
 
-    station_df = pd.DataFrame(
+    return pd.DataFrame(
         station_groups
     )
-
-    # =====================================================
-    # RGB 컬럼
-    # =====================================================
-
-    if not station_df.empty:
-
-        rgb_df = pd.DataFrame(
-            station_df["color"].tolist(),
-            index=station_df.index,
-            columns=[
-                "color_r",
-                "color_g",
-                "color_b",
-            ],
-        )
-
-        station_df[
-            [
-                "color_r",
-                "color_g",
-                "color_b",
-            ]
-        ] = rgb_df
-
-    return station_df
 
 
 # =========================================================
@@ -659,7 +619,7 @@ def _get_subway_station_layers(
         # 기존보다 크게
         get_radius=55,
 
-        # 호선별 색상
+        # 호선 고유 색상
         get_fill_color=[
             "color_r",
             "color_g",
@@ -711,10 +671,10 @@ def _get_subway_station_layers(
             255,
         ],
 
-        # 역 원 아래쪽
+        # 역 원 아래쪽에 이름 표시
         get_pixel_offset=[
             0,
-            32,
+            34,
         ],
 
         get_text_anchor="middle",
@@ -724,7 +684,7 @@ def _get_subway_station_layers(
         billboard=True,
 
         # 중요:
-        # TextLayer는 hover 대상이 되지 않게 함
+        # 텍스트는 hover 대상이 아님
         pickable=False,
 
         font_family="Arial, sans-serif",
@@ -740,7 +700,7 @@ def _get_subway_station_layers(
 
 
 # =========================================================
-# 거래 데이터 Tooltip 추가
+# 거래 데이터 Tooltip 준비
 # =========================================================
 
 def _prepare_transaction_data(
@@ -749,7 +709,11 @@ def _prepare_transaction_data(
 
     if map_df.empty:
 
-        return map_df.copy()
+        map_df = map_df.copy()
+
+        map_df["tooltip_html"] = []
+
+        return map_df
 
     map_df = map_df.copy()
 
@@ -810,7 +774,7 @@ def render_map(
     )
 
     # =====================================================
-    # 거래 데이터
+    # 거래 데이터 컬럼
     # =====================================================
 
     transaction_columns = [
@@ -914,10 +878,7 @@ def render_map(
                     ),
                     "district_name": geo_name,
 
-                    # -------------------------------------
-                    # ★ Tooltip HTML
-                    # -------------------------------------
-
+                    # Tooltip
                     "tooltip_html": (
                         _make_district_tooltip(
                             geo_name
@@ -1035,7 +996,7 @@ def render_map(
         )
 
         # =================================================
-        # 지도
+        # 지도 중심
         # =================================================
 
         view_state = pdk.ViewState(
@@ -1046,14 +1007,15 @@ def render_map(
         )
 
         layers = [
+            # 자치구
             boundary_layer,
 
-            # 역은 거래점보다 먼저
+            # 전체 지하철역
             *_get_subway_station_layers(
                 subway
             ),
 
-            # 거래점은 가장 위
+            # 거래점
             point_layer,
         ]
 
@@ -1067,7 +1029,7 @@ def render_map(
 
                 map_style="light",
 
-                # ★ 핵심
+                # ★ Tooltip
                 tooltip=DECK_TOOLTIP,
             ),
 
@@ -1088,11 +1050,13 @@ def render_map(
         )
 
         # =================================================
-        # 거래 데이터 → 선택 호선
+        # 해당 노선 거래
         # =================================================
 
         map_df = map_df[
-            map_df["최근접역_호선"]
+            map_df[
+                "최근접역_호선"
+            ]
             .astype(str)
             .str.contains(
                 str(selected_place),
@@ -1106,10 +1070,10 @@ def render_map(
         )
 
         # =================================================
-        # ★ 지하철역 → 선택 호선
+        # ★★★ 중요 ★★★
         #
-        # 여기서 전체 subway가 아니라
-        # subway_line을 사용합니다.
+        # 전체 역이 아니라
+        # 선택한 호선의 역만 필터링
         # =================================================
 
         subway_line = (
@@ -1185,7 +1149,7 @@ def render_map(
         )
 
         # =================================================
-        # ★ 선택 호선 역만 표시
+        # 선택 호선 역만 Layer 생성
         # =================================================
 
         subway_layers = (
@@ -1206,10 +1170,10 @@ def render_map(
         )
 
         layers = [
-            # 지하철역
+            # 해당 호선 역
             *subway_layers,
 
-            # 거래점은 역 위
+            # 거래점
             point_layer,
         ]
 
@@ -1223,7 +1187,7 @@ def render_map(
 
                 map_style="light",
 
-                # ★ 핵심
+                # ★ Tooltip
                 tooltip=DECK_TOOLTIP,
             ),
 
@@ -1368,7 +1332,7 @@ def render_map(
         )
 
         # =================================================
-        # 선택 역이 역사마스터에 있는 경우
+        # 역사마스터에 있는 경우
         # =================================================
 
         if not station_info.empty:
@@ -1379,14 +1343,12 @@ def render_map(
                 .tolist()
             )
 
-            # 대표 색상
             station_color = (
                 station_info[
                     "color"
                 ].iloc[0]
             )
 
-            # 역 하나로 합침
             station_info = pd.DataFrame(
                 [
                     {
@@ -1400,13 +1362,15 @@ def render_map(
                         "lines": ", ".join(
                             station_lines
                         ),
-                        "color": station_color,
+                        "color_r": station_color[0],
+                        "color_g": station_color[1],
+                        "color_b": station_color[2],
                     }
                 ]
             )
 
         # =================================================
-        # 역사마스터에 없을 경우
+        # 역사마스터에 없는 경우
         # =================================================
 
         if station_info.empty:
@@ -1442,15 +1406,9 @@ def render_map(
 
             station_info["lines"] = ""
 
-            station_info["color"] = [
-                [
-                    30,
-                    80,
-                    200,
-                ]
-            ] * len(
-                station_info
-            )
+            station_info["color_r"] = 30
+            station_info["color_g"] = 80
+            station_info["color_b"] = 200
 
         # =================================================
         # 선택 역 Tooltip
@@ -1469,29 +1427,8 @@ def render_map(
                 )
             )
 
-            # RGB
-            rgb_df = pd.DataFrame(
-                station_info[
-                    "color"
-                ].tolist(),
-                index=station_info.index,
-                columns=[
-                    "color_r",
-                    "color_g",
-                    "color_b",
-                ],
-            )
-
-            station_info[
-                [
-                    "color_r",
-                    "color_g",
-                    "color_b",
-                ]
-            ] = rgb_df
-
         # =================================================
-        # 선택 역 강조 Layer
+        # 선택 역 Layer
         # =================================================
 
         selected_station_layers = []
@@ -1505,7 +1442,7 @@ def render_map(
 
                 get_position="[lon, lat]",
 
-                # 일반 역보다 크게
+                # 크게 표시
                 get_radius=90,
 
                 # 호선 색상
@@ -1516,6 +1453,7 @@ def render_map(
                     255,
                 ],
 
+                # 흰색 테두리
                 get_line_color=[
                     255,
                     255,
@@ -1536,9 +1474,9 @@ def render_map(
                 selected_station_layer
             )
 
-            # -------------------------------------------------
+            # =================================================
             # 선택 역 이름
-            # -------------------------------------------------
+            # =================================================
 
             selected_station_text = pdk.Layer(
                 "TextLayer",
@@ -1609,7 +1547,7 @@ def render_map(
 
                 map_style="light",
 
-                # ★ 핵심
+                # ★ Tooltip
                 tooltip=DECK_TOOLTIP,
             ),
 
