@@ -1054,10 +1054,16 @@ def render_map(
                     "line",
                     "lon",
                     "lat",
-                    "color",
                 ]
             ]
-            .drop_duplicates()
+            .drop_duplicates(
+                subset=[
+                    "station",
+                    "line",
+                    "lon",
+                    "lat",
+                ]
+            )
             .copy()
         )
 
@@ -1079,7 +1085,12 @@ def render_map(
                     ]
                 ]
                 .dropna()
-                .drop_duplicates()
+                .drop_duplicates(
+                    subset=[
+                        "최근접역_위도",
+                        "최근접역_경도",
+                    ]
+                )
                 .rename(
                     columns={
                         "최근접역_위도": "lat",
