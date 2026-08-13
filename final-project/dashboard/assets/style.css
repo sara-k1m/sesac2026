@@ -1,7 +1,5 @@
 /* =========================================================
    FONTS
-   시세 숫자는 IBM Plex Mono(고정폭·표 숫자)로 티커처럼,
-   본문/한글은 Pretendard로 처리해 데이터 성격을 강조.
    ========================================================= */
 
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css");
@@ -11,50 +9,53 @@
 /* =========================================================
    GLOBAL TOKENS
    ---------------------------------------------------------
-   ink      : 헤드라인 / 구조용 짙은 남색-블랙
-   paper    : 배경 (쿨톤 페이퍼 — 흔한 웜크림 배경과 의도적으로 구분)
-   surface  : 카드 배경
-   steel    : 주 액센트 — 지하철/입지(구조)를 상징하는 딥 스틸블루
-   brass    : 보조 액센트 — 임대료/시세(돈)를 상징하는 머스타드 브라스
-   berry    : 강조 액센트 — "가성비"류 하이라이트 전용, 남용 금지
+   배경은 순백(#ffffff) 고정. 카드/사이드바는 흰 배경 위에서도
+   구조가 읽히도록 보더+그림자로만 구분한다(회색 배경 금지).
+
+   3개의 선택지(자치구/노선/역)에 각각 고유 아이덴티티 컬러를
+   부여해 "항목별 집중도"를 확보한다:
+     자치구 → steel (딥 스틸블루)
+     노선   → brass (브라스 앰버)
+     역     → berry (와인 베리)
    ========================================================= */
 
 :root {
-    --ink: #10151d;
-    --ink-soft: #3a4453;
+    --white: #ffffff;
 
-    --paper: #f4f6f8;
-    --surface: #ffffff;
-    --surface-sunken: #eef1f4;
+    --ink: #0d1117;
+    --ink-soft: #333d4b;
 
     --text: #1c2531;
-    --text-strong: #0d1219;
+    --text-strong: #0a0e14;
     --text-muted: #5c6b7a;
-    --text-faint: #8b97a3;
+    --text-faint: #97a2ad;
 
-    --border: #dde3e9;
-    --border-soft: #e9edf1;
-    --border-strong: #c3ccd4;
+    --border: #e3e7eb;
+    --border-soft: #edf0f3;
+    --border-strong: #cbd2d9;
 
-    --steel: #1f4b66;
-    --steel-dark: #16374c;
-    --steel-soft: #e8f0f5;
-    --steel-line: #cddce5;
+    --steel: #17475f;
+    --steel-dark: #103649;
+    --steel-soft: #eaf1f5;
+    --steel-line: #c9dbe3;
 
-    --brass: #b3852c;
-    --brass-dark: #8f6a20;
-    --brass-soft: #faf1de;
+    --brass: #a06a12;
+    --brass-dark: #7d5309;
+    --brass-soft: #fbf2df;
+    --brass-line: #eaceA0;
 
-    --berry: #7a3b52;
-    --berry-soft: #f6e9ee;
+    --berry: #7d3350;
+    --berry-dark: #5f2740;
+    --berry-soft: #f8ecf1;
+    --berry-line: #e6c9d5;
 
     --font-ui: "Pretendard Variable", "Pretendard", -apple-system,
         "Malgun Gothic", sans-serif;
     --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
 
-    --shadow-sm: 0 1px 2px rgba(16, 21, 29, 0.05);
-    --shadow-md: 0 10px 28px rgba(16, 21, 29, 0.08);
-    --shadow-lift: 0 14px 34px rgba(31, 75, 102, 0.14);
+    --shadow-sm: 0 1px 2px rgba(13, 17, 23, 0.05);
+    --shadow-md: 0 10px 26px rgba(13, 17, 23, 0.07);
+    --shadow-lift: 0 18px 38px rgba(13, 17, 23, 0.12);
 
     --radius-sm: 8px;
     --radius-md: 12px;
@@ -63,11 +64,11 @@
 
 
 /* =========================================================
-   전체 앱
+   전체 앱 — 순백 배경
    ========================================================= */
 
 html, body, .stApp {
-    background: var(--paper);
+    background: var(--white) !important;
     color: var(--text);
     font-family: var(--font-ui);
     letter-spacing: -0.01em;
@@ -76,11 +77,6 @@ html, body, .stApp {
 * {
     font-variant-numeric: tabular-nums;
 }
-
-
-/* =========================================================
-   메인 컨테이너
-   ========================================================= */
 
 .main .block-container {
     max-width: 1360px;
@@ -96,20 +92,7 @@ html, body, .stApp {
 
 
 /* =========================================================
-   3단계 진행 표시 (선택적 컴포넌트)
-   ---------------------------------------------------------
-   실제로 순서가 있는 흐름(기준 선택 → 조건 선택 → 대시보드)이므로
-   번호 마커 사용이 타당함. 각 페이지 상단에
-   <div class="step-flow">…</div> 마크업을 넣어 사용.
-
-   예시:
-   <div class="step-flow">
-     <div class="step-item is-done"><span class="step-num">01</span>기준 선택</div>
-     <div class="step-sep"></div>
-     <div class="step-item is-active"><span class="step-num">02</span>조건 설정</div>
-     <div class="step-sep"></div>
-     <div class="step-item"><span class="step-num">03</span>대시보드</div>
-   </div>
+   3단계 진행 표시
    ========================================================= */
 
 .step-flow {
@@ -117,7 +100,7 @@ html, body, .stApp {
     align-items: center;
     justify-content: center;
     gap: 0.6rem;
-    margin: 0 auto 2rem;
+    margin: 0 auto 2.25rem;
     max-width: 560px;
 }
 
@@ -145,20 +128,14 @@ html, body, .stApp {
     font-weight: 600;
 }
 
-.step-item.is-active {
-    color: var(--steel);
-}
-
+.step-item.is-active { color: var(--steel); }
 .step-item.is-active .step-num {
     background: var(--steel);
     border-color: var(--steel);
     color: #fff;
 }
 
-.step-item.is-done {
-    color: var(--ink-soft);
-}
-
+.step-item.is-done { color: var(--ink-soft); }
 .step-item.is-done .step-num {
     background: var(--steel-soft);
     border-color: var(--steel-line);
@@ -173,7 +150,7 @@ html, body, .stApp {
 
 
 /* =========================================================
-   PAGE 1 — START
+   PAGE 1 — START HEADER
    ========================================================= */
 
 .start-page {
@@ -184,7 +161,7 @@ html, body, .stApp {
 
 .start-header {
     text-align: center;
-    margin-bottom: 2.5rem;
+    margin-bottom: 2.75rem;
 }
 
 .start-eyebrow {
@@ -214,124 +191,162 @@ html, body, .stApp {
 }
 
 .start-description {
-    max-width: 680px;
+    max-width: 640px;
     margin: 1rem auto 0;
     color: var(--text-muted);
     font-size: 1rem;
     line-height: 1.7;
 }
 
-.start-section-title {
-    margin-bottom: 1rem;
-    color: var(--text);
-    font-size: 0.92rem;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-}
-
 
 /* =========================================================
-   선택 카드 (Page 1 / Page 2 공용)
+   PAGE 1 — 선택 카드 (choice-card)
+   ---------------------------------------------------------
+   각 카드는 choice-col--{accent} 래퍼로 감싸 아이콘 배지,
+   좌측 컬러 바, 버튼 색까지 하나의 아이덴티티로 묶는다.
+   흰 배경 위에서 구조를 드러내기 위해 보더 + 은은한 그림자만 사용.
    ========================================================= */
 
-.start-card {
+.choice-col {
+    display: block;
+    height: 100%;
+}
+
+.choice-card {
     position: relative;
-    min-height: 285px;
+    min-height: 300px;
     display: flex;
     flex-direction: column;
-    background: var(--surface);
+    background: var(--white);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    padding: 1.85rem;
+    padding: 1.9rem 1.85rem 1.7rem;
     box-shadow: var(--shadow-sm);
     overflow: hidden;
     transition: transform 0.2s ease, box-shadow 0.2s ease,
         border-color 0.2s ease;
 }
 
-.start-card::before {
+.choice-card::before {
     content: "";
     position: absolute;
-    inset: 0 0 auto 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--steel), var(--brass));
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.25s ease;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: var(--accent, var(--steel));
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
 
-.start-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--steel-line);
+.choice-col:hover .choice-card {
+    transform: translateY(-5px);
+    border-color: var(--accent-line, var(--steel-line));
     box-shadow: var(--shadow-lift);
 }
 
-.start-card:hover::before {
-    transform: scaleX(1);
+.choice-col:hover .choice-card::before {
+    opacity: 1;
 }
 
-.start-card-icon {
-    width: 50px;
-    height: 50px;
-    display: flex;
+.choice-card__badge {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1.25rem;
-    background: var(--steel-soft);
-    border: 1px solid var(--steel-line);
+    width: 52px;
+    height: 52px;
+    margin-bottom: 1.3rem;
+    background: var(--accent-soft, var(--steel-soft));
+    border: 1px solid var(--accent-line, var(--steel-line));
     border-radius: 14px;
-    font-size: 1.55rem;
+    font-size: 1.6rem;
 }
 
-.start-card-title {
+.choice-card__tag {
+    display: inline-block;
+    margin-bottom: 0.7rem;
+    color: var(--accent, var(--steel));
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.choice-card__title {
     margin: 0;
     color: var(--text-strong);
-    font-size: 1.22rem;
-    font-weight: 750;
-    letter-spacing: -0.02em;
+    font-size: 1.28rem;
+    font-weight: 780;
+    letter-spacing: -0.025em;
 }
 
-.start-card-description {
+.choice-card__desc {
     margin-top: 0.65rem;
     color: var(--text-muted);
-    font-size: 0.92rem;
+    font-size: 0.9rem;
     line-height: 1.65;
+    flex-grow: 1;
 }
 
-.start-card-footer {
-    margin-top: auto;
-    padding-top: 1.5rem;
-    color: var(--steel);
-    font-size: 0.86rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
+.choice-card__meta {
+    margin-top: 1.1rem;
+    padding-top: 1.1rem;
+    border-top: 1px dashed var(--border-soft);
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    font-weight: 600;
+}
+
+/* 아이덴티티 컬러 바인딩 */
+
+.choice-col--district {
+    --accent: var(--steel);
+    --accent-dark: var(--steel-dark);
+    --accent-soft: var(--steel-soft);
+    --accent-line: var(--steel-line);
+}
+
+.choice-col--line {
+    --accent: var(--brass-dark);
+    --accent-dark: var(--brass-dark);
+    --accent-soft: var(--brass-soft);
+    --accent-line: var(--brass-line);
+}
+
+.choice-col--station {
+    --accent: var(--berry);
+    --accent-dark: var(--berry-dark);
+    --accent-soft: var(--berry-soft);
+    --accent-line: var(--berry-line);
 }
 
 
 /* =========================================================
-   BUTTON — 주요 액션
+   BUTTON — 카드별 아이덴티티 컬러 적용
    ========================================================= */
 
-.start-button button {
+.choice-col .stButton {
+    margin-top: 0.85rem;
+}
+
+.choice-col .stButton > button {
     width: 100%;
     min-height: 46px;
     border-radius: 9px;
-    border: 1px solid var(--steel);
-    background: var(--steel);
+    border: 1px solid var(--accent, var(--steel));
+    background: var(--accent, var(--steel));
     color: #ffffff;
-    font-size: 0.92rem;
+    font-size: 0.9rem;
     font-weight: 700;
     letter-spacing: -0.005em;
     transition: background 0.18s ease, transform 0.15s ease,
         box-shadow 0.18s ease;
 }
 
-.start-button button:hover {
-    background: var(--steel-dark);
-    border-color: var(--steel-dark);
-    box-shadow: 0 8px 20px rgba(31, 75, 102, 0.22);
+.choice-col .stButton > button:hover {
+    background: var(--accent-dark, var(--steel-dark));
+    border-color: var(--accent-dark, var(--steel-dark));
+    box-shadow: 0 8px 20px rgba(13, 17, 23, 0.16);
     transform: translateY(-1px);
 }
 
@@ -344,6 +359,121 @@ html, body, .stApp {
 
 .stButton > button:hover {
     transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   PAGE 2 — 컨텍스트 배너 (분석 방식 안내)
+   ---------------------------------------------------------
+   기본 st.info 대신 사용하는 커스텀 배너. view_type에 맞춰
+   context-banner--{district|line|station} 클래스를 붙인다.
+   ========================================================= */
+
+.context-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.95rem 1.2rem;
+    margin-bottom: 1.6rem;
+    background: var(--accent-soft, var(--steel-soft));
+    border: 1px solid var(--accent-line, var(--steel-line));
+    border-left: 4px solid var(--accent, var(--steel));
+    border-radius: var(--radius-md);
+}
+
+.context-banner__icon {
+    font-size: 1.35rem;
+    line-height: 1;
+}
+
+.context-banner__text {
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.context-banner__text strong {
+    color: var(--accent, var(--steel));
+    font-weight: 750;
+}
+
+.context-banner--district {
+    --accent: var(--steel);
+    --accent-soft: var(--steel-soft);
+    --accent-line: var(--steel-line);
+}
+
+.context-banner--line {
+    --accent: var(--brass-dark);
+    --accent-soft: var(--brass-soft);
+    --accent-line: var(--brass-line);
+}
+
+.context-banner--station {
+    --accent: var(--berry);
+    --accent-soft: var(--berry-soft);
+    --accent-line: var(--berry-line);
+}
+
+
+/* =========================================================
+   PAGE 2 — 조건 설정 섹션
+   ---------------------------------------------------------
+   emoji 넘버(1️⃣2️⃣) 대신 step-flow와 통일된 모노 넘버 배지 사용.
+   section-block은 st.container(border=True)와 결합해 사용.
+   ========================================================= */
+
+.section-head {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.15rem;
+}
+
+.section-head .section-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--steel);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.section-head .section-title {
+    color: var(--text-strong);
+    font-size: 1.02rem;
+    font-weight: 750;
+    letter-spacing: -0.015em;
+}
+
+.section-head .section-sub {
+    margin-left: auto;
+    color: var(--text-faint);
+    font-size: 0.78rem;
+    font-family: var(--font-mono);
+}
+
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    background: var(--white);
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+div[data-testid="stVerticalBlockBorderWrapper"]:has(div[data-testid="stMetric"]):hover {
+    border-color: var(--steel-line) !important;
+    box-shadow: var(--shadow-md);
+}
+
+div[data-testid="stVerticalBlockBorderWrapper"] > div {
+    padding: 1.15rem 1.3rem;
 }
 
 
@@ -376,11 +506,11 @@ html, body, .stApp {
 
 
 /* =========================================================
-   FILTER CARD
+   FILTER CARD (레거시 — 남아있는 참조용)
    ========================================================= */
 
 .filter-card {
-    background: var(--surface);
+    background: var(--white);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     padding: 1rem 1.15rem;
@@ -397,31 +527,7 @@ html, body, .stApp {
 
 
 /* =========================================================
-   BORDERED CONTAINERS — st.container(border=True)
-   charts.py의 KPI/랭킹/차트 블록이 실제로 사용하는 컴포넌트.
-   기본 Streamlit 회색 테두리를 카드 톤에 맞춰 재정의.
-   ========================================================= */
-
-div[data-testid="stVerticalBlockBorderWrapper"] {
-    background: var(--surface);
-    border: 1px solid var(--border) !important;
-    border-radius: var(--radius-md) !important;
-    box-shadow: var(--shadow-sm);
-    transition: box-shadow 0.18s ease, border-color 0.18s ease;
-}
-
-div[data-testid="stVerticalBlockBorderWrapper"]:has(div[data-testid="stMetric"]):hover {
-    border-color: var(--steel-line) !important;
-    box-shadow: var(--shadow-md);
-}
-
-div[data-testid="stVerticalBlockBorderWrapper"] > div {
-    padding: 1.1rem 1.2rem;
-}
-
-
-/* =========================================================
-   METRIC — 임대료/거래 수치
+   METRIC
    ========================================================= */
 
 div[data-testid="stMetric"] {
@@ -465,9 +571,6 @@ div[data-testid="stMetricDelta"] svg {
 
 /* =========================================================
    추천 KPI — 가장 저렴한 지역 / 역 / 가성비
-   charts.py는 st.markdown 인라인 스타일로 상단 라벨을 그리므로
-   해당 색상도 steel / brass / berry 3색 체계에 맞춰 사용할 것:
-   지역 → var(--steel) · 역 → var(--brass-dark) · 가성비 → var(--berry)
    ========================================================= */
 
 .recommend-card {
@@ -487,25 +590,19 @@ div[data-testid="stMetricDelta"] svg {
     border-left: 3px solid var(--steel);
     padding-left: 0.9rem;
 }
-.recommend-card.cheap .recommend-title {
-    color: var(--steel);
-}
+.recommend-card.cheap .recommend-title { color: var(--steel); }
 
 .recommend-card.station {
     border-left: 3px solid var(--brass-dark);
     padding-left: 0.9rem;
 }
-.recommend-card.station .recommend-title {
-    color: var(--brass-dark);
-}
+.recommend-card.station .recommend-title { color: var(--brass-dark); }
 
 .recommend-card.value {
     border-left: 3px solid var(--berry);
     padding-left: 0.9rem;
 }
-.recommend-card.value .recommend-title {
-    color: var(--berry);
-}
+.recommend-card.value .recommend-title { color: var(--berry); }
 
 .recommend-name {
     color: var(--text-strong);
@@ -574,6 +671,7 @@ div[data-baseweb="tab-border"] {
 div[data-baseweb="select"] > div {
     border-color: var(--border);
     border-radius: 9px;
+    background: var(--white);
 }
 
 div[data-baseweb="select"] > div:hover {
@@ -600,12 +698,15 @@ div[data-testid="stTickBar"] {
 
 
 /* =========================================================
-   SIDEBAR
+   SIDEBAR — 화이트 메인과 대비되는 다크 톤
+   ---------------------------------------------------------
+   본문은 순백을 유지하되, 사이드바는 딥 잉크 톤으로 분리해
+   "필터 영역"이라는 역할을 시각적으로 명확히 구분한다.
    ========================================================= */
 
 section[data-testid="stSidebar"] {
-    background: var(--surface);
-    border-right: 1px solid var(--border);
+    background: var(--ink);
+    border-right: 1px solid var(--ink);
 }
 
 section[data-testid="stSidebar"] > div {
@@ -616,12 +717,60 @@ section[data-testid="stSidebar"] h2 {
     font-size: 1.05rem;
     font-weight: 800;
     letter-spacing: -0.02em;
-    color: var(--text-strong);
+    color: #ffffff;
 }
 
-section[data-testid="stSidebar"] strong {
-    color: var(--ink-soft);
-    font-size: 0.85rem;
+section[data-testid="stSidebar"] strong,
+section[data-testid="stSidebar"] p,
+section[data-testid="stSidebar"] label,
+section[data-testid="stSidebar"] span {
+    color: #d7dde3;
+}
+
+section[data-testid="stSidebar"] .stCaption,
+section[data-testid="stSidebar"] small {
+    color: #7c8794 !important;
+}
+
+section[data-testid="stSidebar"] hr {
+    border-top: 1px solid #232c38;
+}
+
+section[data-testid="stSidebar"] div[data-testid="stMetric"] label {
+    color: #9aa5b1 !important;
+}
+
+section[data-testid="stSidebar"] div[data-testid="stMetricValue"] {
+    color: #ffffff !important;
+}
+
+section[data-testid="stSidebar"] div[data-baseweb="select"] > div {
+    background: #1a212b;
+    border-color: #2a3441;
+    color: #ffffff;
+}
+
+section[data-testid="stSidebar"] div[data-baseweb="select"] svg {
+    fill: #9aa5b1;
+}
+
+section[data-testid="stSidebar"] div[data-testid="stAlert"] {
+    background: rgba(31, 75, 95, 0.35);
+    border: 1px solid #274050;
+    color: #cfe0e8;
+}
+
+section[data-testid="stSidebar"] div[data-testid="stAlert"] p {
+    color: #cfe0e8;
+}
+
+section[data-testid="stSidebar"] div[data-baseweb="slider"] div[role="slider"] {
+    background-color: #4f9cbf !important;
+    border-color: #4f9cbf !important;
+}
+
+section[data-testid="stSidebar"] div[data-baseweb="slider"] > div > div {
+    background: #2a3441 !important;
 }
 
 
@@ -638,7 +787,7 @@ hr {
 
 
 /* =========================================================
-   ALERT
+   ALERT (본문 영역)
    ========================================================= */
 
 div[data-testid="stAlert"] {
@@ -658,42 +807,19 @@ div[data-testid="stAlert"] {
         padding-right: 1rem;
     }
 
-    .start-page {
-        padding-top: 1rem;
-    }
+    .start-page { padding-top: 1rem; }
+    .start-title { font-size: 1.9rem; }
+    .start-description { font-size: 0.92rem; }
 
-    .start-title {
-        font-size: 1.9rem;
-    }
+    .choice-card { min-height: auto; padding: 1.5rem; }
 
-    .start-description {
-        font-size: 0.92rem;
-    }
+    .step-flow { gap: 0.35rem; }
+    .step-item { font-size: 0.72rem; }
+    .step-sep { width: 14px; }
 
-    .start-card {
-        min-height: auto;
-        padding: 1.4rem;
-    }
+    .dashboard-title { font-size: 1.5rem; }
 
-    .step-flow {
-        gap: 0.35rem;
-    }
-
-    .step-item {
-        font-size: 0.72rem;
-    }
-
-    .step-sep {
-        width: 14px;
-    }
-
-    .dashboard-title {
-        font-size: 1.5rem;
-    }
-
-    div[data-testid="stMetricValue"] {
-        font-size: 1.3rem !important;
-    }
+    div[data-testid="stMetricValue"] { font-size: 1.3rem !important; }
 
     div[data-testid="stVerticalBlockBorderWrapper"] > div {
         padding: 0.9rem 1rem;
@@ -702,13 +828,13 @@ div[data-testid="stAlert"] {
 
 
 /* =========================================================
-   접근성 — 모션 최소화 선호 시
+   접근성
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-    .start-card,
-    .start-card::before,
-    .start-button button,
+    .choice-card,
+    .choice-card::before,
+    .choice-col .stButton > button,
     .stButton > button,
     div[data-testid="stVerticalBlockBorderWrapper"] {
         transition: none !important;
