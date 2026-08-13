@@ -5,63 +5,84 @@ import streamlit as st
 
 
 def render_start():
+
+    # =====================================================
+    # PAGE 1 BACKGROUND
+    # -----------------------------------------------------
+    # 첫 화면에서만 적용되는 배경.
+    # 기존 CSS 파일은 수정하지 않아도 됨.
+    # =====================================================
+
+    st.markdown(
+        """
+        <style>
+        .stApp {
+            background:
+                radial-gradient(
+                    circle at 12% 0%,
+                    rgba(23, 71, 95, 0.18),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 92% 15%,
+                    rgba(125, 51, 80, 0.07),
+                    transparent 25%
+                ),
+                linear-gradient(
+                    135deg,
+                    #0d1117 0%,
+                    #18232d 14%,
+                    #e9eef1 42%,
+                    #ffffff 72%
+                ) !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
     # =====================================================
     # HEADER
     # =====================================================
-    
-    with st.container(border=True):
-    
-        st.markdown(
-            "### SEOUL RENTAL MARKET · 2025"
-        )
-    
-        st.markdown(
-            "## 서울 청년 월세 시장을 분석하세요"
-        )
-    
-        st.caption(
-            "분석 기준을 선택하면 다음 단계에서 "
-            "원하는 조건을 설정하고 상세 데이터를 확인할 수 있습니다."
-        )
-    
-    # =====================================================
-    # CHOICES
-    # =====================================================
 
-    col1, col2, col3 = st.columns(3, gap="medium")
+    st.markdown(
+        "### SEOUL RENTAL MARKET · 2025"
+    )
+
+    st.markdown(
+        "## 서울 청년 월세 시장을 분석하세요"
+    )
+
+    st.caption(
+        "분석 기준을 선택하면 다음 단계에서 "
+        "원하는 조건을 설정하고 상세 데이터를 확인할 수 있습니다."
+    )
+
+    st.markdown("")
 
     # =====================================================
-    # 자치구
+    # CHOICE CARDS
+    # =====================================================
+
+    col1, col2, col3 = st.columns(
+        3,
+        gap="medium",
+    )
+
+    # =====================================================
+    # 자치구별
     # =====================================================
 
     with col1:
 
         with st.container(border=True):
 
-            st.markdown(
-                """
-                <div style="
-                    width: 48px;
-                    height: 48px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    background: #eaf1f5;
-                    border: 1px solid #c9dbe3;
-                    border-radius: 12px;
-                    font-size: 1.4rem;
-                    margin-bottom: 0.8rem;
-                ">
-                    🏙️
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+            st.markdown("### 🏙️")
 
             st.caption("DISTRICT")
 
             st.markdown(
-                "### 자치구별 보기"
+                "#### 자치구별 보기"
             )
 
             st.write(
@@ -70,6 +91,8 @@ def render_start():
             )
 
             st.markdown("")
+
+            st.caption("25 DISTRICTS")
 
             if st.button(
                 "자치구별 분석 시작 →",
@@ -82,37 +105,19 @@ def render_start():
                 st.rerun()
 
     # =====================================================
-    # 노선
+    # 노선별
     # =====================================================
 
     with col2:
 
         with st.container(border=True):
 
-            st.markdown(
-                """
-                <div style="
-                    width: 48px;
-                    height: 48px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    background: #fbf2df;
-                    border: 1px solid #eaceA0;
-                    border-radius: 12px;
-                    font-size: 1.4rem;
-                    margin-bottom: 0.8rem;
-                ">
-                    🚇
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+            st.markdown("### 🚇")
 
             st.caption("SUBWAY LINE")
 
             st.markdown(
-                "### 지하철 노선별 보기"
+                "#### 지하철 노선별 보기"
             )
 
             st.write(
@@ -121,6 +126,8 @@ def render_start():
             )
 
             st.markdown("")
+
+            st.caption("SUBWAY NETWORK")
 
             if st.button(
                 "노선별 분석 시작 →",
@@ -133,37 +140,19 @@ def render_start():
                 st.rerun()
 
     # =====================================================
-    # 역
+    # 역별
     # =====================================================
 
     with col3:
 
         with st.container(border=True):
 
-            st.markdown(
-                """
-                <div style="
-                    width: 48px;
-                    height: 48px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    background: #f8ecf1;
-                    border: 1px solid #e6c9d5;
-                    border-radius: 12px;
-                    font-size: 1.4rem;
-                    margin-bottom: 0.8rem;
-                ">
-                    📍
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+            st.markdown("### 📍")
 
             st.caption("STATION")
 
             st.markdown(
-                "### 지하철역별 보기"
+                "#### 지하철역별 보기"
             )
 
             st.write(
@@ -172,6 +161,8 @@ def render_start():
             )
 
             st.markdown("")
+
+            st.caption("STATION LEVEL")
 
             if st.button(
                 "역별 분석 시작 →",
@@ -182,3 +173,10 @@ def render_start():
                 st.session_state.view_type = "station"
                 st.session_state.page = 2
                 st.rerun()
+
+    # =====================================================
+    # FOOTER SPACE
+    # =====================================================
+
+    st.markdown("")
+    st.markdown("")
