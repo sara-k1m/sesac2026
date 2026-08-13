@@ -1,16 +1,13 @@
 # 서울 전월세 가격 변동 요인 분석
 ### 금리와 지하철 접근성을 중심으로
 
-> 서울시 전월세 실거래 데이터에 금리와 지하철 접근성 데이터를 결합하여 **금리 변화와 주거 입지가 전월세 가격에 미치는 영향**을 분석합니다. <br>청년층의 주거지역 선택 및 거주 계획 수립에 참고할 수 있는 데이터 기반 정보 제공을 목표로 합니다.
+> 서울시 전월세 실거래 데이터를 기반으로 **금리 변화와 자치구가 월세 가격에 미치는 영향**을 분석합니다. <br>이후 지하철 접근성 데이터를 결합하여 제작한 대시보드를 제작하고, 이를 통해 청년층의 주거지역 선택 및 거주 계획 수립에 참고할 수 있는 데이터 기반 정보 제공을 목표로 합니다.
 
 **작업 기간**: 2026-08-10(월) ~ 2026-08-14(금)
 
 ---
 
 ## 진행 상황
-
-<!-- 작업이 끝날 때마다 [ ] -> [x] 로 바꾸고 커밋하세요 -->
-
 **전체 진척도: 5 / 10 (50%)**
 
 - [x] 데이터 수집 (전월세 실거래 2016~2025, 금리, 지하철역 좌표)
@@ -18,11 +15,11 @@
 - [x] 지오코딩 (카카오 → VWorld → Google 3단계 + 지번 재매핑)
 - [x] 이상치 처리 및 파생변수 생성 (면적당/평당 가격, 계약연월)
 - [x] 외생변수 결합 (금리 계약연월 조인, 지하철 최근접역·거리구간)
-- [ ] 금리 변수 선정 및 Lag 분석 (월세 데이터 분리, 최적 시차 도출)
-- [ ] 상관관계 분석 (거리구간별·자치구별·시기별 비교)
-- [ ] 결과 시각화 및 인사이트 정리
-- [ ] 발표자료(PPT) 제작
-- [ ] 최종 검토 및 GitHub 정리
+- [x] 금리 변수 선정 및 Lag 분석 (월세 데이터 분리, 최적 시차 도출)
+- [x] 상관관계 분석 (거리구간별·자치구별·시기별 비교)
+- [x] 결과 시각화 및 인사이트 정리
+- [x] 발표자료(PPT) 제작
+- [x] 최종 검토 및 GitHub 정리
 
 ---
 
@@ -52,35 +49,9 @@
 |---|---|
 | 서울시 전월세 실거래가 (2016~2025) | [서울 부동산 정보광장](https://data.seoul.go.kr/dataList/OA-21276/S/1/datasetView.do) |
 | 한국은행 기준금리 / 여수신금리 | [한국은행 ECOS](https://ecos.bok.or.kr/) |
-| 지하철 1~8호선 역사 좌표 | [서울교통공사](https://data.seoul.go.kr/dataList/OA-22534/F/1/datasetView.do) |
-| 지하철 9호선 역사 좌표 | [서울교통공사](https://data.seoul.go.kr/dataList/OA-22447/F/1/datasetView.do) |
-
-## 사용 변수
-
-**파생 변수**: address, 위도/경도, 계약연월, 면적당·평당 보증금/임대료
-
-**외생 변수**: 기준금리, 정부대출금리, 국고채10년(+Lag), 최근접역, 호선, 거리, 거리구간
-
-## 폴더 구조
-
-```
-final-project
-├── code/
-│   └── sesac2026_da_final_project_eda.ipynb/   # 분석 노트북
-├── data/
-│   └── Final/
-│       ├── interest_rate.CSV      # 금리 데이터 (기준금리/정부대출금리/국고채10년)
-│       └── subway_geocode.csv     # 지하철 1~9호선 통합 좌표
-└── README.md
-```
+| 지하철역 좌표정보 | [서울교통빅데이터플랫폼]([https://data.seoul.go.kr/dataList/OA-22534/F/1/datasetView.do](https://t-data.seoul.go.kr/dataprovide/trafficdataviewfile.do?data_id=36)) |
 
 >  **파일 용량 초과로 전월세 원본 실거래 데이터는 repository에 포함하지 않았습니다.**
-> 원본 데이터는 [서울 부동산 정보광장](https://data.seoul.go.kr/dataList/OA-21276/S/1/datasetView.do)에서 연도별로 직접 다운로드하여 `data/Final/`경로에 두고 실행해야 합니다.
-
-## 실행 방법
-
-```bash
-pip install pandas numpy requests tqdm scikit-learn statsmodels matplotlib seaborn koreanize-matplotlib
-```
+> 원본 데이터는 [서울 열린 데이터 광장](https://data.seoul.go.kr/dataList/OA-21276/S/1/datasetView.do)에서 연도별로 직접 다운로드하여 실행해야 합니다.
 
 *최종 업데이트: 2026-08-10*
