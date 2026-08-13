@@ -30,9 +30,7 @@ SUBWAY_STATIONS_PATH = (
 
 
 # =========================================================
-# 전체 Tooltip
-#
-# HTML을 사용하지 않고 text 방식 사용
+# 지도 Tooltip
 # =========================================================
 
 DECK_TOOLTIP = {
@@ -42,6 +40,7 @@ DECK_TOOLTIP = {
         "color": "#172033",
         "fontSize": "13px",
         "padding": "10px",
+        "borderRadius": "8px",
     },
 }
 
@@ -550,9 +549,6 @@ def _prepare_station_display_data(
 
         # =================================================
         # 대표 색상
-        #
-        # 여러 호선이 만나는 역의 경우
-        # 첫 번째 호선 색상을 대표색으로 사용
         # =================================================
 
         if len(group) > 0:
@@ -595,6 +591,8 @@ def _prepare_station_display_data(
 
 # =========================================================
 # 지하철역 Layer
+#
+# 역을 중심으로 반경 250m를 투명한 원으로 표시
 # =========================================================
 
 def _get_subway_station_layers(
@@ -618,33 +616,33 @@ def _get_subway_station_layers(
     layers = []
 
     # =====================================================
-    # 역 원
+    # 250m 역세권 원
     # =====================================================
 
-    station_layer = pdk.Layer(
+    station_radius_layer = pdk.Layer(
         "ScatterplotLayer",
 
         data=station_df,
 
         get_position="[lon, lat]",
 
-        # 역 원 크기
-        get_radius=55,
+        # 실제 반경 250m
+        get_radius=250,
 
-        # 호선 고유 색상
+        # 호선 색상 + 매우 낮은 불투명도
         get_fill_color=[
             "color_r",
             "color_g",
             "color_b",
-            255,
+            35,
         ],
 
-        # 흰색 외곽선
+        # 호선 색상 외곽선
         get_line_color=[
-            255,
-            255,
-            255,
-            255,
+            "color_r",
+            "color_g",
+            "color_b",
+            145,
         ],
 
         stroked=True,
@@ -657,7 +655,49 @@ def _get_subway_station_layers(
     )
 
     layers.append(
-        station_layer
+        station_radius_layer
+    )
+
+    # =====================================================
+    # 역 중심점
+    #
+    # 250m 원의 중심이 어디인지 명확하게 표시
+    # =====================================================
+
+    station_center_layer = pdk.Layer(
+        "ScatterplotLayer",
+
+        data=station_df,
+
+        get_position="[lon, lat]",
+
+        get_radius=32,
+
+        get_fill_color=[
+            "color_r",
+            "color_g",
+            "color_b",
+            230,
+        ],
+
+        get_line_color=[
+            255,
+            255,
+            255,
+            240,
+        ],
+
+        stroked=True,
+
+        line_width_min_pixels=2,
+
+        pickable=True,
+
+        auto_highlight=True,
+    )
+
+    layers.append(
+        station_center_layer
     )
 
     # =====================================================
@@ -683,7 +723,7 @@ def _get_subway_station_layers(
             255,
         ],
 
-        # 역 원 아래쪽
+        # 역 중심점 아래쪽
         get_pixel_offset=[
             0,
             34,
@@ -880,11 +920,6 @@ def render_map(
 
                 feature_copy = feature.copy()
 
-                # -------------------------------------------------
-                # ★ 중요
-                # 자치구에는 자치구 Tooltip을 넣어야 함
-                # -------------------------------------------------
-
                 feature_copy[
                     "properties"
                 ] = {
@@ -938,7 +973,6 @@ def render_map(
 
         elif selected_features:
 
-            # GeoJSON bounds를 이용한 중심 계산
             try:
 
                 geometry_list = [
@@ -999,7 +1033,7 @@ def render_map(
                 70,
                 130,
                 180,
-                70,
+                55,
             ],
 
             get_line_color=[
@@ -1031,18 +1065,19 @@ def render_map(
 
             get_radius=35,
 
+            # 중립 회색 + 반투명
             get_fill_color=[
-                220,
-                70,
-                70,
-                190,
+                120,
+                128,
+                138,
+                150,
             ],
 
             get_line_color=[
                 255,
                 255,
                 255,
-                255,
+                230,
             ],
 
             stroked=True,
@@ -1070,10 +1105,11 @@ def render_map(
         # =================================================
 
         layers = [
+
             # 자치구
             boundary_layer,
 
-            # 전체 지하철역
+            # 지하철역 + 250m 반경
             *_get_subway_station_layers(
                 subway
             ),
@@ -1188,18 +1224,19 @@ def render_map(
 
             get_radius=35,
 
+            # 중립 회색 + 반투명
             get_fill_color=[
-                50,
                 120,
-                200,
-                190,
+                128,
+                138,
+                150,
             ],
 
             get_line_color=[
                 255,
                 255,
                 255,
-                255,
+                230,
             ],
 
             stroked=True,
@@ -1233,7 +1270,8 @@ def render_map(
         )
 
         layers = [
-            # 해당 호선 역만
+
+            # 해당 호선 역 + 250m 반경
             *subway_layers,
 
             # 거래점
@@ -1322,7 +1360,6 @@ def render_map(
                     station_info_from_df[
                         "최근접역_경도"
                     ].iloc[0]
-
                 )
 
             else:
@@ -1343,18 +1380,19 @@ def render_map(
 
             get_radius=30,
 
+            # 중립 회색 + 반투명
             get_fill_color=[
-                220,
-                70,
-                70,
-                190,
+                120,
+                128,
+                138,
+                150,
             ],
 
             get_line_color=[
                 255,
                 255,
                 255,
-                255,
+                230,
             ],
 
             stroked=True,
@@ -1502,25 +1540,69 @@ def render_map(
 
         if not station_info.empty:
 
-            selected_station_layer = pdk.Layer(
+            # =================================================
+            # 선택 역 250m 반경
+            # =================================================
+
+            selected_station_radius = pdk.Layer(
                 "ScatterplotLayer",
 
                 data=station_info,
 
                 get_position="[lon, lat]",
 
-                # 크게 표시
-                get_radius=90,
+                # 실제 반경 250m
+                get_radius=250,
 
-                # 호선 색상
+                # 호선 색상 + 매우 투명
                 get_fill_color=[
                     "color_r",
                     "color_g",
                     "color_b",
-                    255,
+                    35,
                 ],
 
-                # 흰색 테두리
+                # 호선 색상 테두리
+                get_line_color=[
+                    "color_r",
+                    "color_g",
+                    "color_b",
+                    180,
+                ],
+
+                stroked=True,
+
+                line_width_min_pixels=3,
+
+                pickable=True,
+
+                auto_highlight=True,
+            )
+
+            selected_station_layers.append(
+                selected_station_radius
+            )
+
+            # =================================================
+            # 선택 역 중심점
+            # =================================================
+
+            selected_station_center = pdk.Layer(
+                "ScatterplotLayer",
+
+                data=station_info,
+
+                get_position="[lon, lat]",
+
+                get_radius=45,
+
+                get_fill_color=[
+                    "color_r",
+                    "color_g",
+                    "color_b",
+                    245,
+                ],
+
                 get_line_color=[
                     255,
                     255,
@@ -1530,7 +1612,7 @@ def render_map(
 
                 stroked=True,
 
-                line_width_min_pixels=4,
+                line_width_min_pixels=3,
 
                 pickable=True,
 
@@ -1538,7 +1620,7 @@ def render_map(
             )
 
             selected_station_layers.append(
-                selected_station_layer
+                selected_station_center
             )
 
             # =================================================
@@ -1565,7 +1647,7 @@ def render_map(
 
                 get_pixel_offset=[
                     0,
-                    48,
+                    52,
                 ],
 
                 get_text_anchor="middle",
@@ -1598,10 +1680,11 @@ def render_map(
         )
 
         layers = [
+
             # 거래점
             point_layer,
 
-            # 선택 역
+            # 선택 역 + 250m 반경
             *selected_station_layers,
         ]
 
