@@ -207,6 +207,11 @@ html, body, .stApp {
    흰 배경 위에서 구조를 드러내기 위해 보더 + 은은한 그림자만 사용.
    ========================================================= */
 
+.start-header-bg {
+    background: #0d1117;
+    color: #ffffff;
+}
+
 .choice-col {
     display: block;
     height: 100%;
@@ -825,6 +830,7 @@ div[data-testid="stAlert"] {
         padding: 0.9rem 1rem;
     }
 }
+
 
 
 /* =========================================================
