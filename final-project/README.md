@@ -36,7 +36,7 @@
 |---|---|
 | 서울시 전월세 실거래가 (2016~2025) | [서울 부동산 정보광장](https://data.seoul.go.kr/dataList/OA-21276/S/1/datasetView.do) |
 | 한국은행 기준금리 / 여수신금리 | [한국은행 ECOS](https://ecos.bok.or.kr/) |
-| 지하철역 좌표정보 | [서울교통빅데이터플랫폼]([https://data.seoul.go.kr/dataList/OA-22534/F/1/datasetView.do](https://t-data.seoul.go.kr/dataprovide/trafficdataviewfile.do?data_id=36)) |
+| 지하철역 좌표정보 | [서울교통빅데이터플랫폼](https://t-data.seoul.go.kr/dataprovide/trafficdataviewfile.do?data_id=36) |
 
 >  **파일 용량 초과로 전월세 원본 실거래 데이터는 repository에 포함하지 않았습니다.**
 > 원본 데이터는 [서울 열린 데이터 광장](https://data.seoul.go.kr/dataList/OA-21276/S/1/datasetView.do)에서 연도별로 직접 다운로드하여 실행해야 합니다.
