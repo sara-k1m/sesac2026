@@ -35,7 +35,10 @@ SUBWAY_STATIONS_PATH = (
 
 _OFFICIAL_LINE_COLORS = {
 
+    # -----------------------------------------
     # 수도권 1~9호선
+    # -----------------------------------------
+
     "1호선": [0, 82, 164],
     "2호선": [0, 168, 77],
     "3호선": [239, 124, 28],
@@ -46,7 +49,10 @@ _OFFICIAL_LINE_COLORS = {
     "8호선": [230, 24, 108],
     "9호선": [189, 176, 146],
 
+    # -----------------------------------------
     # 수도권 광역철도
+    # -----------------------------------------
+
     "경의중앙선": [119, 196, 163],
     "수인분당선": [250, 190, 0],
     "신분당선": [212, 0, 59],
@@ -54,13 +60,19 @@ _OFFICIAL_LINE_COLORS = {
     "경강선": [0, 61, 165],
     "서해선": [143, 195, 31],
 
-    # 기타
+    # -----------------------------------------
+    # 기타 수도권 노선
+    # -----------------------------------------
+
     "공항철도": [0, 144, 210],
     "우이신설선": [176, 206, 24],
     "신림선": [103, 137, 202],
     "김포골드라인": [173, 134, 5],
 
+    # -----------------------------------------
     # 인천
+    # -----------------------------------------
+
     "인천1호선": [124, 168, 213],
     "인천2호선": [237, 139, 0],
 }
@@ -88,7 +100,12 @@ def _hsv_to_rgb255(h, s, v):
 def _build_color_palette(line_groups):
 
     color_map = {}
+
     remaining = []
+
+    # -----------------------------------------------------
+    # 공식 색상이 있는 노선
+    # -----------------------------------------------------
 
     for line_group in line_groups:
 
@@ -103,6 +120,10 @@ def _build_color_palette(line_groups):
             remaining.append(
                 line_group
             )
+
+    # -----------------------------------------------------
+    # 공식 색상이 없는 노선은 자동 색상
+    # -----------------------------------------------------
 
     n = len(remaining)
 
@@ -143,9 +164,9 @@ def _load_subway_stations(
         geojson_path_str
     )
 
-    # -----------------------------------------------------
+    # =====================================================
     # 파일 존재 여부
-    # -----------------------------------------------------
+    # =====================================================
 
     if not path.exists():
 
@@ -159,18 +180,18 @@ def _load_subway_stations(
             ]
         )
 
-    # -----------------------------------------------------
+    # =====================================================
     # CSV 읽기
-    # -----------------------------------------------------
+    # =====================================================
 
     subway = pd.read_csv(
         path,
         encoding="utf-8-sig",
     )
 
-    # -----------------------------------------------------
+    # =====================================================
     # 컬럼명 변경
-    # -----------------------------------------------------
+    # =====================================================
 
     subway = subway.rename(
         columns={
@@ -181,9 +202,9 @@ def _load_subway_stations(
         }
     )
 
-    # -----------------------------------------------------
+    # =====================================================
     # 필요한 컬럼만 사용
-    # -----------------------------------------------------
+    # =====================================================
 
     subway = subway[
         [
@@ -194,9 +215,9 @@ def _load_subway_stations(
         ]
     ].copy()
 
-    # -----------------------------------------------------
+    # =====================================================
     # 숫자 변환
-    # -----------------------------------------------------
+    # =====================================================
 
     subway["lon"] = pd.to_numeric(
         subway["lon"],
@@ -208,9 +229,9 @@ def _load_subway_stations(
         errors="coerce",
     )
 
-    # -----------------------------------------------------
+    # =====================================================
     # 결측치 제거
-    # -----------------------------------------------------
+    # =====================================================
 
     subway = subway.dropna(
         subset=[
@@ -221,9 +242,9 @@ def _load_subway_stations(
         ]
     ).copy()
 
-    # -----------------------------------------------------
+    # =====================================================
     # 문자열 정리
-    # -----------------------------------------------------
+    # =====================================================
 
     subway["station"] = (
         subway["station"]
@@ -412,7 +433,10 @@ def _get_subway_station_layers(
     layers = []
 
     # =====================================================
-    # 1. 역 바깥쪽 흰색 원
+    # 1. 역 기본 점
+    #
+    # 흰색으로 크게 덮지 않고
+    # 작은 흰색 점 + 얇은 테두리만 표시
     # =====================================================
 
     station_base_layer = pdk.Layer(
@@ -422,20 +446,31 @@ def _get_subway_station_layers(
 
         get_position="[lon, lat]",
 
-        get_radius=95,
+        get_radius=38,
 
         get_fill_color=[
             255,
             255,
             255,
-            255,
+            220,
         ],
 
-        stroked=False,
+        get_line_color=[
+            100,
+            100,
+            100,
+            180,
+        ],
+
+        stroked=True,
+
+        line_width_min_pixels=2,
 
         pickable=True,
 
         auto_highlight=True,
+
+        tooltip=SUBWAY_TOOLTIP,
     )
 
     layers.append(
@@ -443,7 +478,7 @@ def _get_subway_station_layers(
     )
 
     # =====================================================
-    # 2. 호선별 색상 테두리
+    # 2. 호선별 색상 점
     # =====================================================
 
     for line in sorted(
@@ -483,63 +518,36 @@ def _get_subway_station_layers(
 
             get_position="[lon, lat]",
 
-            get_radius=70,
+            get_radius=28,
 
             get_fill_color=[
-                255,
-                255,
-                255,
-                255,
-            ],
-
-            get_line_color=[
                 color[0],
                 color[1],
                 color[2],
                 255,
             ],
 
+            get_line_color=[
+                255,
+                255,
+                255,
+                255,
+            ],
+
             stroked=True,
 
-            line_width_min_pixels=5,
+            line_width_min_pixels=2,
 
             pickable=True,
 
             auto_highlight=True,
+
+            tooltip=SUBWAY_TOOLTIP,
         )
 
         layers.append(
             line_layer
         )
-
-    # =====================================================
-    # 3. 중앙 흰색 점
-    # =====================================================
-
-    station_center_layer = pdk.Layer(
-        "ScatterplotLayer",
-
-        data=station_df,
-
-        get_position="[lon, lat]",
-
-        get_radius=25,
-
-        get_fill_color=[
-            255,
-            255,
-            255,
-            255,
-        ],
-
-        pickable=True,
-
-        auto_highlight=True,
-    )
-
-    layers.append(
-        station_center_layer
-    )
 
     return layers
 
@@ -573,6 +581,23 @@ SUBWAY_TOOLTIP = {
     "html": (
         "<b>🚇 {station}</b><br/>"
         "호선: {lines}"
+    ),
+    "style": {
+        "backgroundColor": "white",
+        "color": "#172033",
+        "fontSize": "12px",
+        "padding": "8px",
+    },
+}
+
+
+# =========================================================
+# 자치구 Tooltip
+# =========================================================
+
+DISTRICT_TOOLTIP = {
+    "html": (
+        "<b>📍 {district_name}</b>"
     ),
     "style": {
         "backgroundColor": "white",
@@ -720,8 +745,20 @@ def render_map(
 
             if geo_name == selected_place:
 
+                feature_copy = feature.copy()
+
+                feature_copy[
+                    "properties"
+                ] = {
+                    **feature.get(
+                        "properties",
+                        {}
+                    ),
+                    "district_name": geo_name,
+                }
+
                 selected_features.append(
-                    feature
+                    feature_copy
                 )
 
         selected_boundary = {
@@ -787,6 +824,8 @@ def render_map(
             pickable=True,
 
             auto_highlight=True,
+
+            tooltip=DISTRICT_TOOLTIP,
         )
 
         # -------------------------------------------------
@@ -812,6 +851,8 @@ def render_map(
             pickable=True,
 
             auto_highlight=True,
+
+            tooltip=TRANSACTION_TOOLTIP,
         )
 
         # -------------------------------------------------
@@ -836,8 +877,6 @@ def render_map(
                 layers=layers,
 
                 initial_view_state=view_state,
-
-                tooltip=TRANSACTION_TOOLTIP,
 
                 map_provider="carto",
 
@@ -916,6 +955,8 @@ def render_map(
             pickable=True,
 
             auto_highlight=True,
+
+            tooltip=TRANSACTION_TOOLTIP,
         )
 
         # -------------------------------------------------
@@ -939,8 +980,6 @@ def render_map(
                 layers=layers,
 
                 initial_view_state=view_state,
-
-                tooltip=TRANSACTION_TOOLTIP,
 
                 map_provider="carto",
 
@@ -1008,6 +1047,7 @@ def render_map(
                     station_info[
                         "최근접역_경도"
                     ].iloc[0]
+
                 )
 
             else:
@@ -1038,6 +1078,8 @@ def render_map(
             pickable=True,
 
             auto_highlight=True,
+
+            tooltip=TRANSACTION_TOOLTIP,
         )
 
         # -------------------------------------------------
@@ -1110,15 +1152,17 @@ def render_map(
 
             get_position="[lon, lat]",
 
-            get_radius=150,
+            get_radius=70,
 
+            # 흰색 면 제거
             get_fill_color=[
                 255,
                 255,
                 255,
-                255,
+                0,
             ],
 
+            # 파란색 테두리
             get_line_color=[
                 30,
                 80,
@@ -1128,11 +1172,13 @@ def render_map(
 
             stroked=True,
 
-            line_width_min_pixels=6,
+            line_width_min_pixels=4,
 
             pickable=True,
 
             auto_highlight=True,
+
+            tooltip=SUBWAY_TOOLTIP,
         )
 
         # -------------------------------------------------
@@ -1143,7 +1189,6 @@ def render_map(
             latitude=center_lat,
             longitude=center_lon,
             zoom=14,
-
             pitch=0,
         )
 
@@ -1158,8 +1203,6 @@ def render_map(
                 layers=layers,
 
                 initial_view_state=view_state,
-
-                tooltip=TRANSACTION_TOOLTIP,
 
                 map_provider="carto",
 
