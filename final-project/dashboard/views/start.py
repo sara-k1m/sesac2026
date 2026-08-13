@@ -5,25 +5,80 @@ import streamlit as st
 
 
 def render_start():
-
+    
     # =====================================================
     # HEADER
     # =====================================================
-
-    st.markdown(
-        "### SEOUL RENTAL MARKET · 2025"
-    )
     
     st.markdown(
-        "## 2025 서울 청년 월세 분석"
-    )
+        """
+        <style>
+        .start-hero {
+            background: #0d1117;
+            color: #ffffff;
+            padding: 3rem 2rem 3.2rem;
+            margin: -0.75rem -2rem 2.5rem;
+            text-align: center;
+            border-bottom: 1px solid #232c38;
+        }
     
-    st.caption(
-        "분석 기준을 선택하면 다음 단계에서 "
-        "원하는 조건을 설정하고 상세 데이터를 확인할 수 있습니다."
-    )
+        .start-hero-eyebrow {
+            color: #8fb3c4;
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
     
-    st.markdown("")
+        .start-hero-title {
+            margin: 0;
+            color: #ffffff;
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1.25;
+            letter-spacing: -0.05em;
+        }
+    
+        .start-hero-description {
+            max-width: 620px;
+            margin: 1rem auto 0;
+            color: #9aa5b1;
+            font-size: 0.92rem;
+            line-height: 1.7;
+        }
+    
+        @media (max-width: 900px) {
+            .start-hero {
+                padding: 2.2rem 1rem 2.5rem;
+                margin: -0.75rem -1rem 2rem;
+            }
+    
+            .start-hero-title {
+                font-size: 1.9rem;
+            }
+        }
+        </style>
+    
+        <div class="start-hero">
+    
+            <div class="start-hero-eyebrow">
+                SEOUL RENTAL MARKET · 2025
+            </div>
+    
+            <h1 class="start-hero-title">
+                서울 청년 월세 시장을 분석하세요
+            </h1>
+    
+            <p class="start-hero-description">
+                분석 기준을 선택하면 다음 단계에서
+                원하는 조건을 설정하고 상세 데이터를 확인할 수 있습니다.
+            </p>
+    
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     # =====================================================
     # CHOICES
