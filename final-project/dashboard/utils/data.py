@@ -1,4 +1,3 @@
-# utils/data.py
 from pathlib import Path
 
 import pandas as pd
@@ -16,30 +15,26 @@ DISTANCE_ORDER = [
 @st.cache_data
 def load_data():
 
-    # data_path = (
-    #     BASE_DIR
-    #     / "data"
-    #     / "rent_2025_final_dashboard_clean.parquet"
-    # )
+    # data.py → utils → dashboard
+    BASE_DIR = Path(__file__).resolve().parent.parent
 
-    df = pd.read_parquet("final-project/dashboard/data/rent_2025_dashboard_clean.parquet")
+    data_path = (
+        BASE_DIR
+        / "data"
+        / "rent_2025_dashboard_clean.parquet"
+    )
 
-    # =====================================================
+    df = pd.read_parquet(data_path)
+
     # 계약일
-    # =====================================================
-
     if "계약일" in df.columns:
-
         df["계약일"] = pd.to_datetime(
             df["계약일"],
             format="%Y%m%d",
             errors="coerce"
         )
 
-    # =====================================================
     # 숫자형
-    # =====================================================
-
     numeric_cols = [
         "보증금(만원)",
         "임대료(만원)",
@@ -53,18 +48,13 @@ def load_data():
     ]
 
     for col in numeric_cols:
-
         if col in df.columns:
-
             df[col] = pd.to_numeric(
                 df[col],
                 errors="coerce"
             )
 
-    # =====================================================
     # 문자형
-    # =====================================================
-
     string_cols = [
         "자치구명",
         "법정동명",
@@ -75,21 +65,15 @@ def load_data():
     ]
 
     for col in string_cols:
-
         if col in df.columns:
-
             df[col] = (
                 df[col]
                 .astype("string")
                 .str.strip()
             )
 
-    # =====================================================
     # 거리구간
-    # =====================================================
-
     if "거리구간" in df.columns:
-
         df["거리구간"] = pd.Categorical(
             df["거리구간"],
             categories=DISTANCE_ORDER,

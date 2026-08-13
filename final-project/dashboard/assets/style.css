@@ -1,10 +1,37 @@
 /* =========================================================
+   GLOBAL
+   ========================================================= */
+
+:root {
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-soft: #f8fafb;
+
+    --text: #17212b;
+    --text-strong: #111827;
+    --text-muted: #64748b;
+
+    --border: #e2e8f0;
+    --border-light: #edf1f4;
+
+    --primary: #0f766e;
+    --primary-dark: #115e59;
+    --primary-soft: #ecfdf5;
+
+    --navy: #1e293b;
+
+    --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04);
+    --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+
+/* =========================================================
    전체 앱
    ========================================================= */
 
 .stApp {
-    background: #F7F9FC;
-    color: #172033;
+    background: var(--bg);
+    color: var(--text);
 }
 
 
@@ -12,11 +39,18 @@
    메인 컨테이너
    ========================================================= */
 
+/* 상단 공백 축소 */
 .main .block-container {
     max-width: 1400px;
-    padding-top: 3rem;
-    padding-bottom: 3rem;
+
+    padding-top: 0.5rem;
+    padding-bottom: 2rem;
+
+    padding-left: 2rem;
+    padding-right: 2rem;
 }
+
+
 
 
 /* =========================================================
@@ -25,67 +59,86 @@
 
 .start-page {
     max-width: 1180px;
+
     margin: 0 auto;
-    padding: 3rem 1rem 4rem;
+
+    padding: 1.5rem 1rem 3rem;
 }
 
 
-/* ---------------------------------------------------------
-   헤더
-   --------------------------------------------------------- */
+/* =========================================================
+   PAGE 1 HEADER
+   ========================================================= */
 
 .start-header {
     text-align: center;
-    margin-bottom: 3rem;
+
+    margin-bottom: 2.25rem;
 }
 
-.start-eyebrow {
-    display: inline-block;
-    padding: 0.4rem 0.8rem;
-    margin-bottom: 1rem;
 
-    background: #EFF6FF;
-    color: #2563EB;
+.start-eyebrow {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 0.35rem 0.75rem;
+
+    margin-bottom: 0.75rem;
+
+    background: var(--primary-soft);
+    color: var(--primary);
+
+    border: 1px solid #d1fae5;
 
     border-radius: 999px;
 
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     font-weight: 700;
-    letter-spacing: -0.02em;
+
+    letter-spacing: -0.01em;
 }
+
+
 
 .start-title {
     margin: 0;
 
-    color: #111827;
+    color: var(--text-strong);
 
-    font-size: 2.6rem;
+    font-size: 2.45rem;
     font-weight: 800;
-    line-height: 1.25;
-    letter-spacing: -0.04em;
+
+    line-height: 1.2;
+
+    letter-spacing: -0.045em;
 }
+
 
 .start-description {
-    margin-top: 1rem;
+    max-width: 700px;
 
-    color: #6B7280;
+    margin: 0.85rem auto 0;
 
-    font-size: 1.05rem;
-    line-height: 1.7;
+    color: var(--text-muted);
+
+    font-size: 1rem;
+    line-height: 1.65;
 }
 
 
-/* ---------------------------------------------------------
-   분석 기준 선택 안내
-   --------------------------------------------------------- */
+/* =========================================================
+   SECTION TITLE
+   ========================================================= */
 
 .start-section-title {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
 
-    color: #374151;
+    color: var(--text);
 
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: 0.95rem;
+    font-weight: 750;
+
+    letter-spacing: -0.015em;
 }
 
 
@@ -94,139 +147,363 @@
    ========================================================= */
 
 .start-card {
-    min-height: 300px;
+    min-height: 285px;
 
     display: flex;
     flex-direction: column;
 
-    background: #FFFFFF;
+    background: var(--surface);
 
-    border: 1px solid #E5E7EB;
-    border-radius: 20px;
+    border: 1px solid var(--border);
 
-    padding: 2rem;
+    border-radius: 16px;
 
-    box-shadow:
-        0 1px 2px rgba(15, 23, 42, 0.03);
+    padding: 1.75rem;
+
+    box-shadow: var(--shadow-sm);
 
     transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        border-color 0.2s ease;
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        border-color 0.18s ease;
 }
 
-
-/* 카드 hover */
 
 .start-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-3px);
 
-    border-color: #BFDBFE;
+    border-color: #cbd5e1;
 
-    box-shadow:
-        0 12px 30px rgba(37, 99, 235, 0.10);
+    box-shadow: var(--shadow-md);
 }
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    카드 아이콘
-   --------------------------------------------------------- */
+   ========================================================= */
 
 .start-card-icon {
-    width: 56px;
-    height: 56px;
+    width: 50px;
+    height: 50px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
 
-    background: #EFF6FF;
+    background: var(--primary-soft);
 
-    border-radius: 16px;
+    border: 1px solid #d1fae5;
 
-    font-size: 1.8rem;
+    border-radius: 14px;
+
+    font-size: 1.6rem;
 }
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    카드 제목
-   --------------------------------------------------------- */
+   ========================================================= */
 
 .start-card-title {
     margin: 0;
 
-    color: #111827;
+    color: var(--text-strong);
 
-    font-size: 1.35rem;
+    font-size: 1.25rem;
     font-weight: 750;
+
     letter-spacing: -0.025em;
 }
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    카드 설명
-   --------------------------------------------------------- */
+   ========================================================= */
 
 .start-card-description {
-    margin-top: 0.75rem;
+    margin-top: 0.65rem;
 
-    color: #6B7280;
+    color: var(--text-muted);
 
-    font-size: 0.95rem;
-    line-height: 1.7;
+    font-size: 0.92rem;
+    line-height: 1.65;
 }
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    카드 하단
-   --------------------------------------------------------- */
+   ========================================================= */
 
 .start-card-footer {
     margin-top: auto;
-    padding-top: 1.75rem;
 
-    color: #2563EB;
+    padding-top: 1.5rem;
 
-    font-size: 0.9rem;
+    color: var(--primary);
+
+    font-size: 0.88rem;
     font-weight: 700;
 }
 
 
 /* =========================================================
-   Streamlit 버튼
+   BUTTON
    ========================================================= */
 
 .start-button button {
     width: 100%;
 
-    min-height: 46px;
+    min-height: 44px;
 
-    border-radius: 10px;
+    border-radius: 9px;
 
-    border: 1px solid #2563EB;
+    border: 1px solid var(--primary);
 
-    background: #2563EB;
-    color: white;
+    background: var(--primary);
+    color: #ffffff;
 
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     font-weight: 700;
 
     transition:
-        background 0.2s ease,
+        background 0.18s ease,
         transform 0.15s ease,
-        box-shadow 0.2s ease;
+        box-shadow 0.18s ease;
 }
 
 
 .start-button button:hover {
-    background: #1D4ED8;
-    border-color: #1D4ED8;
+    background: var(--primary-dark);
+
+    border-color: var(--primary-dark);
 
     box-shadow:
-        0 5px 15px rgba(37, 99, 235, 0.25);
+        0 5px 14px rgba(15, 118, 110, 0.18);
 
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   DASHBOARD 공통
+   ========================================================= */
+
+/* 대시보드 상단의 불필요한 빈 공간 제거 */
+[data-testid="stVerticalBlock"] {
+    gap: 0.65rem;
+}
+
+
+/* =========================================================
+   DASHBOARD HEADER
+   ========================================================= */
+
+.dashboard-header {
+    margin-top: 0.25rem;
+    margin-bottom: 1.25rem;
+}
+
+
+.dashboard-title {
+    margin: 0;
+
+    color: var(--text-strong);
+
+    font-size: 1.9rem;
+    font-weight: 800;
+
+    line-height: 1.25;
+
+    letter-spacing: -0.04em;
+}
+
+
+.dashboard-description {
+    margin-top: 0.35rem;
+
+    color: var(--text-muted);
+
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   FILTER CARD
+   ========================================================= */
+
+.filter-card {
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: 14px;
+
+    padding: 1rem 1.15rem;
+
+    margin-bottom: 1rem;
+
+    box-shadow: var(--shadow-sm);
+}
+
+
+.filter-title {
+    margin-bottom: 0.65rem;
+
+    color: var(--text);
+
+    font-size: 0.9rem;
+    font-weight: 750;
+}
+
+
+/* =========================================================
+   METRIC
+   ========================================================= */
+
+div[data-testid="stMetric"] {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.9rem 1rem;
+    box-shadow: none;
+}
+
+
+
+div[data-testid="stMetric"] label {
+    color: var(--text-muted) !important;
+
+    font-size: 0.78rem !important;
+    font-weight: 650 !important;
+}
+
+
+div[data-testid="stMetricValue"] {
+    color: var(--text-strong) !important;
+
+    font-size: 1.55rem !important;
+    font-weight: 800 !important;
+
+    letter-spacing: -0.035em;
+}
+
+
+/* =========================================================
+   TAB
+   ========================================================= */
+
+button[data-baseweb="tab"] {
+    color: var(--text-muted);
+
+    font-size: 0.9rem;
+    font-weight: 650;
+
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+}
+
+
+button[data-baseweb="tab"][aria-selected="true"] {
+    color: var(--primary);
+    font-weight: 750;
+}
+
+
+/* =========================================================
+   DATAFRAME
+   ========================================================= */
+
+[data-testid="stDataFrame"] {
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow: var(--shadow-sm);
+}
+
+
+/* =========================================================
+   SELECTBOX / MULTISELECT / SLIDER
+   ========================================================= */
+
+div[data-baseweb="select"] > div {
+    border-color: var(--border);
+
+    border-radius: 9px;
+}
+
+
+div[data-baseweb="select"] > div:hover {
+    border-color: #94a3b8;
+}
+
+
+[data-testid="stSlider"] {
+    padding-top: 0.25rem;
+}
+
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+section[data-testid="stSidebar"] {
+    background: var(--surface);
+
+    border-right: 1px solid var(--border);
+}
+
+
+section[data-testid="stSidebar"] > div {
+    padding-top: 1.25rem;
+}
+
+
+/* =========================================================
+   DIVIDER
+   ========================================================= */
+
+hr {
+    margin-top: 0.8rem;
+    margin-bottom: 0.8rem;
+
+    border: none;
+
+    border-top: 1px solid var(--border-light);
+}
+
+
+/* =========================================================
+   ALERT
+   ========================================================= */
+
+div[data-testid="stAlert"] {
+    border-radius: 10px;
+}
+
+
+/* =========================================================
+   BUTTON GENERAL
+   ========================================================= */
+
+.stButton > button {
+    border-radius: 9px;
+
+    font-weight: 650;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.15s ease;
+}
+
+
+.stButton > button:hover {
     transform: translateY(-1px);
 }
 
@@ -238,11 +515,13 @@
 @media (max-width: 900px) {
 
     .main .block-container {
-        padding-top: 2rem;
+        padding-top: 0.75rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 
     .start-page {
-        padding-top: 1.5rem;
+        padding-top: 1rem;
     }
 
     .start-title {
@@ -250,46 +529,219 @@
     }
 
     .start-description {
-        font-size: 0.95rem;
+        font-size: 0.92rem;
     }
 
     .start-card {
         min-height: auto;
-        padding: 1.5rem;
+        padding: 1.4rem;
+    }
+
+    .dashboard-title {
+        font-size: 1.55rem;
+    }
+
+    div[data-testid="stMetric"] {
+        min-height: 90px;
+        padding: 0.85rem;
+    }
+
+    div[data-testid="stMetricValue"] {
+        font-size: 1.3rem !important;
     }
 }
 
-
 /* =========================================================
-   Metric
+   추천 KPI 카드
    ========================================================= */
 
-div[data-testid="stMetric"] {
-    background: #FFFFFF;
+.recommend-card {
+    background: #ffffff;
 
-    border: 1px solid #E5E7EB;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid;
 
     border-radius: 12px;
 
+    padding: 1rem 1.1rem;
+
+    min-height: 125px;
+
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+
+    box-sizing: border-box;
+}
+
+
+/* 가장 저렴한 지역 */
+
+.recommend-cheap {
+    border-left-color: #0f766e;
+}
+
+
+/* 가장 저렴한 역 */
+
+.recommend-station {
+    border-left-color: #2563eb;
+}
+
+
+/* 가성비 1위 */
+
+.recommend-value-card {
+    border-left-color: #d97706;
+}
+
+
+/* 카드 제목 */
+
+.recommend-label {
+    color: #64748b;
+
+    font-size: 0.8rem;
+    font-weight: 650;
+
+    line-height: 1.3;
+}
+
+
+/* 지역 / 역 이름 */
+
+.recommend-name {
+    margin-top: 0.45rem;
+
+    color: #111827;
+
+    font-size: 1.05rem;
+    font-weight: 750;
+
+    line-height: 1.3;
+}
+
+
+/* 금액 */
+
+.recommend-value {
+    margin-top: 0.15rem;
+
+    color: #111827;
+
+    font-size: 1.4rem;
+    font-weight: 800;
+
+    line-height: 1.3;
+
+    letter-spacing: -0.03em;
+}
+
+
+/* 거래건수 / 거리 */
+
+.recommend-sub {
+    margin-top: 0.2rem;
+
+    color: #64748b;
+
+    font-size: 0.78rem;
+
+    line-height: 1.3;
+}
+
+/* =========================================================
+   추천 카드
+   ========================================================= */
+
+.recommend-card {
+    padding: 0.2rem 0;
+}
+
+
+/* 제목 */
+
+.recommend-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+
+    margin-bottom: 0.5rem;
+}
+
+
+/* 지역 */
+
+.recommend-card.cheap {
+    border-left: 4px solid #0f766e;
+    padding-left: 0.9rem;
+}
+
+.recommend-card.cheap .recommend-title {
+    color: #0f766e;
+}
+
+
+/* 역 */
+
+.recommend-card.station {
+    border-left: 4px solid #2563eb;
+    padding-left: 0.9rem;
+}
+
+.recommend-card.station .recommend-title {
+    color: #2563eb;
+}
+
+
+/* 가성비 */
+
+.recommend-card.value {
+    border-left: 4px solid #d97706;
+    padding-left: 0.9rem;
+}
+
+.recommend-card.value .recommend-title {
+    color: #d97706;
+}
+
+
+/* 이름 */
+
+.recommend-name {
+    color: #111827;
+
+    font-size: 1.05rem;
+    font-weight: 750;
+}
+
+
+/* 금액 */
+
+.recommend-value {
+    margin-top: 0.1rem;
+
+    color: #111827;
+
+    font-size: 1.4rem;
+    font-weight: 800;
+
+    letter-spacing: -0.03em;
+}
+
+
+/* 보조 정보 */
+
+.recommend-sub {
+    margin-top: 0.15rem;
+
+    color: #64748b;
+
+    font-size: 0.8rem;
+}
+
+/* 기본 KPI */
+div[data-testid="stMetric"] {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
     padding: 0.9rem 1rem;
-}
-
-
-/* =========================================================
-   탭
-   ========================================================= */
-
-button[data-baseweb="tab"] {
-    font-weight: 600;
-}
-
-
-/* =========================================================
-   Sidebar
-   ========================================================= */
-
-section[data-testid="stSidebar"] {
-    background: #FFFFFF;
-
-    border-right: 1px solid #E5E7EB;
+    box-shadow: none;
 }

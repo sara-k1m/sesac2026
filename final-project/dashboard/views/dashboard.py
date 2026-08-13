@@ -76,7 +76,7 @@ def render_dashboard(
 
     if view_type == "district":
 
-        title = f"🏙️ {selected_place} 월세 분석"
+        title = f"{selected_place} 월세 분석"
 
         base_filter = (
             df["자치구명"] == selected_place

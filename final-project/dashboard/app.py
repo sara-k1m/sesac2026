@@ -79,16 +79,9 @@ MIN_COUNT = 10
 try:
     df = load_data()
 
-except FileNotFoundError:
-    st.error(
-        "⚠️ rent_2025_final_dashboard.csv 파일을 찾을 수 없습니다."
-    )
-
-    st.info(
-        "data/rent_2025_final_dashboard.csv 위치에 "
-        "CSV 파일을 넣어주세요."
-    )
-
+except FileNotFoundError as e:
+    st.error("⚠️ 데이터 파일을 찾을 수 없습니다.")
+    st.code(str(e))
     st.stop()
 
 
