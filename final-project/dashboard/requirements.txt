@@ -5,3 +5,4 @@ plotly
 pydeck
 streamlit-scroll-to-top
 pyarrow
+shapely
