@@ -1,27 +1,64 @@
 /* =========================================================
-   GLOBAL
+   FONTS
+   시세 숫자는 IBM Plex Mono(고정폭·표 숫자)로 티커처럼,
+   본문/한글은 Pretendard로 처리해 데이터 성격을 강조.
+   ========================================================= */
+
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&display=swap");
+
+
+/* =========================================================
+   GLOBAL TOKENS
+   ---------------------------------------------------------
+   ink      : 헤드라인 / 구조용 짙은 남색-블랙
+   paper    : 배경 (쿨톤 페이퍼 — 흔한 웜크림 배경과 의도적으로 구분)
+   surface  : 카드 배경
+   steel    : 주 액센트 — 지하철/입지(구조)를 상징하는 딥 스틸블루
+   brass    : 보조 액센트 — 임대료/시세(돈)를 상징하는 머스타드 브라스
+   berry    : 강조 액센트 — "가성비"류 하이라이트 전용, 남용 금지
    ========================================================= */
 
 :root {
-    --bg: #ffffff;
+    --ink: #10151d;
+    --ink-soft: #3a4453;
+
+    --paper: #f4f6f8;
     --surface: #ffffff;
-    --surface-soft: #f8fafb;
+    --surface-sunken: #eef1f4;
 
-    --text: #17212b;
-    --text-strong: #111827;
-    --text-muted: #64748b;
+    --text: #1c2531;
+    --text-strong: #0d1219;
+    --text-muted: #5c6b7a;
+    --text-faint: #8b97a3;
 
-    --border: #e2e8f0;
-    --border-light: #edf1f4;
+    --border: #dde3e9;
+    --border-soft: #e9edf1;
+    --border-strong: #c3ccd4;
 
-    --primary: #0f766e;
-    --primary-dark: #115e59;
-    --primary-soft: #ecfdf5;
+    --steel: #1f4b66;
+    --steel-dark: #16374c;
+    --steel-soft: #e8f0f5;
+    --steel-line: #cddce5;
 
-    --navy: #1e293b;
+    --brass: #b3852c;
+    --brass-dark: #8f6a20;
+    --brass-soft: #faf1de;
 
-    --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04);
-    --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.06);
+    --berry: #7a3b52;
+    --berry-soft: #f6e9ee;
+
+    --font-ui: "Pretendard Variable", "Pretendard", -apple-system,
+        "Malgun Gothic", sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+
+    --shadow-sm: 0 1px 2px rgba(16, 21, 29, 0.05);
+    --shadow-md: 0 10px 28px rgba(16, 21, 29, 0.08);
+    --shadow-lift: 0 14px 34px rgba(31, 75, 102, 0.14);
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
 }
 
 
@@ -29,9 +66,15 @@
    전체 앱
    ========================================================= */
 
-.stApp {
-    background: var(--bg);
+html, body, .stApp {
+    background: var(--paper);
     color: var(--text);
+    font-family: var(--font-ui);
+    letter-spacing: -0.01em;
+}
+
+* {
+    font-variant-numeric: tabular-nums;
 }
 
 
@@ -39,294 +82,296 @@
    메인 컨테이너
    ========================================================= */
 
-/* 상단 공백 축소 */
 .main .block-container {
-    max-width: 1400px;
-
-    padding-top: 0.5rem;
-    padding-bottom: 2rem;
-
+    max-width: 1360px;
+    padding-top: 0.75rem;
+    padding-bottom: 3rem;
     padding-left: 2rem;
     padding-right: 2rem;
 }
 
-
+[data-testid="stVerticalBlock"] {
+    gap: 0.7rem;
+}
 
 
 /* =========================================================
-   PAGE 1
+   3단계 진행 표시 (선택적 컴포넌트)
+   ---------------------------------------------------------
+   실제로 순서가 있는 흐름(기준 선택 → 조건 선택 → 대시보드)이므로
+   번호 마커 사용이 타당함. 각 페이지 상단에
+   <div class="step-flow">…</div> 마크업을 넣어 사용.
+
+   예시:
+   <div class="step-flow">
+     <div class="step-item is-done"><span class="step-num">01</span>기준 선택</div>
+     <div class="step-sep"></div>
+     <div class="step-item is-active"><span class="step-num">02</span>조건 설정</div>
+     <div class="step-sep"></div>
+     <div class="step-item"><span class="step-num">03</span>대시보드</div>
+   </div>
+   ========================================================= */
+
+.step-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin: 0 auto 2rem;
+    max-width: 560px;
+}
+
+.step-item {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--text-faint);
+    font-size: 0.82rem;
+    font-weight: 650;
+    white-space: nowrap;
+}
+
+.step-item .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-strong);
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.step-item.is-active {
+    color: var(--steel);
+}
+
+.step-item.is-active .step-num {
+    background: var(--steel);
+    border-color: var(--steel);
+    color: #fff;
+}
+
+.step-item.is-done {
+    color: var(--ink-soft);
+}
+
+.step-item.is-done .step-num {
+    background: var(--steel-soft);
+    border-color: var(--steel-line);
+    color: var(--steel);
+}
+
+.step-sep {
+    width: 28px;
+    height: 1px;
+    background: var(--border-strong);
+}
+
+
+/* =========================================================
+   PAGE 1 — START
    ========================================================= */
 
 .start-page {
     max-width: 1180px;
-
     margin: 0 auto;
-
-    padding: 1.5rem 1rem 3rem;
+    padding: 1.25rem 1rem 3rem;
 }
-
-
-/* =========================================================
-   PAGE 1 HEADER
-   ========================================================= */
 
 .start-header {
     text-align: center;
-
-    margin-bottom: 2.25rem;
+    margin-bottom: 2.5rem;
 }
-
 
 .start-eyebrow {
     display: inline-flex;
     align-items: center;
-
-    padding: 0.35rem 0.75rem;
-
-    margin-bottom: 0.75rem;
-
-    background: var(--primary-soft);
-    color: var(--primary);
-
-    border: 1px solid #d1fae5;
-
+    gap: 0.4rem;
+    padding: 0.32rem 0.8rem;
+    margin-bottom: 1rem;
+    background: var(--steel-soft);
+    color: var(--steel);
+    border: 1px solid var(--steel-line);
     border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
 
-    font-size: 0.78rem;
+.start-title {
+    margin: 0;
+    color: var(--text-strong);
+    font-size: 2.6rem;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.045em;
+}
+
+.start-description {
+    max-width: 680px;
+    margin: 1rem auto 0;
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+.start-section-title {
+    margin-bottom: 1rem;
+    color: var(--text);
+    font-size: 0.92rem;
     font-weight: 700;
-
     letter-spacing: -0.01em;
 }
 
 
-
-.start-title {
-    margin: 0;
-
-    color: var(--text-strong);
-
-    font-size: 2.45rem;
-    font-weight: 800;
-
-    line-height: 1.2;
-
-    letter-spacing: -0.045em;
-}
-
-
-.start-description {
-    max-width: 700px;
-
-    margin: 0.85rem auto 0;
-
-    color: var(--text-muted);
-
-    font-size: 1rem;
-    line-height: 1.65;
-}
-
-
 /* =========================================================
-   SECTION TITLE
-   ========================================================= */
-
-.start-section-title {
-    margin-bottom: 1rem;
-
-    color: var(--text);
-
-    font-size: 0.95rem;
-    font-weight: 750;
-
-    letter-spacing: -0.015em;
-}
-
-
-/* =========================================================
-   선택 카드
+   선택 카드 (Page 1 / Page 2 공용)
    ========================================================= */
 
 .start-card {
+    position: relative;
     min-height: 285px;
-
     display: flex;
     flex-direction: column;
-
     background: var(--surface);
-
     border: 1px solid var(--border);
-
-    border-radius: 16px;
-
-    padding: 1.75rem;
-
+    border-radius: var(--radius-lg);
+    padding: 1.85rem;
     box-shadow: var(--shadow-sm);
-
-    transition:
-        transform 0.18s ease,
-        box-shadow 0.18s ease,
-        border-color 0.18s ease;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease,
+        border-color 0.2s ease;
 }
 
+.start-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--steel), var(--brass));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+}
 
 .start-card:hover {
-    transform: translateY(-3px);
-
-    border-color: #cbd5e1;
-
-    box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
+    border-color: var(--steel-line);
+    box-shadow: var(--shadow-lift);
 }
 
-
-/* =========================================================
-   카드 아이콘
-   ========================================================= */
+.start-card:hover::before {
+    transform: scaleX(1);
+}
 
 .start-card-icon {
     width: 50px;
     height: 50px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     margin-bottom: 1.25rem;
-
-    background: var(--primary-soft);
-
-    border: 1px solid #d1fae5;
-
+    background: var(--steel-soft);
+    border: 1px solid var(--steel-line);
     border-radius: 14px;
-
-    font-size: 1.6rem;
+    font-size: 1.55rem;
 }
-
-
-/* =========================================================
-   카드 제목
-   ========================================================= */
 
 .start-card-title {
     margin: 0;
-
     color: var(--text-strong);
-
-    font-size: 1.25rem;
+    font-size: 1.22rem;
     font-weight: 750;
-
-    letter-spacing: -0.025em;
+    letter-spacing: -0.02em;
 }
-
-
-/* =========================================================
-   카드 설명
-   ========================================================= */
 
 .start-card-description {
     margin-top: 0.65rem;
-
     color: var(--text-muted);
-
     font-size: 0.92rem;
     line-height: 1.65;
 }
 
-
-/* =========================================================
-   카드 하단
-   ========================================================= */
-
 .start-card-footer {
     margin-top: auto;
-
     padding-top: 1.5rem;
-
-    color: var(--primary);
-
-    font-size: 0.88rem;
+    color: var(--steel);
+    font-size: 0.86rem;
     font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
 }
 
 
 /* =========================================================
-   BUTTON
+   BUTTON — 주요 액션
    ========================================================= */
 
 .start-button button {
     width: 100%;
-
-    min-height: 44px;
-
+    min-height: 46px;
     border-radius: 9px;
-
-    border: 1px solid var(--primary);
-
-    background: var(--primary);
+    border: 1px solid var(--steel);
+    background: var(--steel);
     color: #ffffff;
-
     font-size: 0.92rem;
     font-weight: 700;
-
-    transition:
-        background 0.18s ease,
-        transform 0.15s ease,
+    letter-spacing: -0.005em;
+    transition: background 0.18s ease, transform 0.15s ease,
         box-shadow 0.18s ease;
 }
 
-
 .start-button button:hover {
-    background: var(--primary-dark);
+    background: var(--steel-dark);
+    border-color: var(--steel-dark);
+    box-shadow: 0 8px 20px rgba(31, 75, 102, 0.22);
+    transform: translateY(-1px);
+}
 
-    border-color: var(--primary-dark);
+.stButton > button {
+    border-radius: 9px;
+    font-weight: 650;
+    transition: background 0.15s ease, border-color 0.15s ease,
+        transform 0.15s ease, box-shadow 0.15s ease;
+}
 
-    box-shadow:
-        0 5px 14px rgba(15, 118, 110, 0.18);
-
+.stButton > button:hover {
     transform: translateY(-1px);
 }
 
 
 /* =========================================================
-   DASHBOARD 공통
-   ========================================================= */
-
-/* 대시보드 상단의 불필요한 빈 공간 제거 */
-[data-testid="stVerticalBlock"] {
-    gap: 0.65rem;
-}
-
-
-/* =========================================================
-   DASHBOARD HEADER
+   DASHBOARD HEADER (Page 3)
    ========================================================= */
 
 .dashboard-header {
-    margin-top: 0.25rem;
-    margin-bottom: 1.25rem;
+    margin-top: 0.2rem;
+    margin-bottom: 1.4rem;
+    padding-bottom: 1.1rem;
+    border-bottom: 1px solid var(--border-soft);
 }
-
 
 .dashboard-title {
     margin: 0;
-
     color: var(--text-strong);
-
-    font-size: 1.9rem;
+    font-size: 1.95rem;
     font-weight: 800;
-
     line-height: 1.25;
-
     letter-spacing: -0.04em;
 }
 
-
 .dashboard-description {
-    margin-top: 0.35rem;
-
+    margin-top: 0.4rem;
     color: var(--text-muted);
-
     font-size: 0.9rem;
-    line-height: 1.5;
+    line-height: 1.55;
 }
 
 
@@ -336,58 +381,151 @@
 
 .filter-card {
     background: var(--surface);
-
     border: 1px solid var(--border);
-
-    border-radius: 14px;
-
+    border-radius: var(--radius-md);
     padding: 1rem 1.15rem;
-
     margin-bottom: 1rem;
-
     box-shadow: var(--shadow-sm);
 }
 
-
 .filter-title {
     margin-bottom: 0.65rem;
-
     color: var(--text);
-
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     font-weight: 750;
 }
 
 
 /* =========================================================
-   METRIC
+   BORDERED CONTAINERS — st.container(border=True)
+   charts.py의 KPI/랭킹/차트 블록이 실제로 사용하는 컴포넌트.
+   기본 Streamlit 회색 테두리를 카드 톤에 맞춰 재정의.
+   ========================================================= */
+
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    background: var(--surface);
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+div[data-testid="stVerticalBlockBorderWrapper"]:has(div[data-testid="stMetric"]):hover {
+    border-color: var(--steel-line) !important;
+    box-shadow: var(--shadow-md);
+}
+
+div[data-testid="stVerticalBlockBorderWrapper"] > div {
+    padding: 1.1rem 1.2rem;
+}
+
+
+/* =========================================================
+   METRIC — 임대료/거래 수치
    ========================================================= */
 
 div[data-testid="stMetric"] {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 0.9rem 1rem;
-    box-shadow: none;
+    background: transparent;
+    border: none;
+    padding: 0;
 }
-
-
 
 div[data-testid="stMetric"] label {
     color: var(--text-muted) !important;
-
-    font-size: 0.78rem !important;
-    font-weight: 650 !important;
+    font-size: 0.86rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.01em;
 }
-
 
 div[data-testid="stMetricValue"] {
     color: var(--text-strong) !important;
+    font-family: var(--font-mono) !important;
+    font-size: 1.65rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em;
+    margin-top: 0.2rem;
+}
 
-    font-size: 1.55rem !important;
-    font-weight: 800 !important;
+div[data-testid="stMetricDelta"] {
+    font-family: var(--font-mono) !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    padding: 0.15rem 0.5rem;
+    margin-top: 0.35rem;
+    background: var(--steel-soft);
+    color: var(--steel) !important;
+    border-radius: 999px;
+    display: inline-flex;
+}
 
-    letter-spacing: -0.035em;
+div[data-testid="stMetricDelta"] svg {
+    display: none;
+}
+
+
+/* =========================================================
+   추천 KPI — 가장 저렴한 지역 / 역 / 가성비
+   charts.py는 st.markdown 인라인 스타일로 상단 라벨을 그리므로
+   해당 색상도 steel / brass / berry 3색 체계에 맞춰 사용할 것:
+   지역 → var(--steel) · 역 → var(--brass-dark) · 가성비 → var(--berry)
+   ========================================================= */
+
+.recommend-card {
+    padding: 0.15rem 0;
+}
+
+.recommend-title {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-bottom: 0.55rem;
+}
+
+.recommend-card.cheap {
+    border-left: 3px solid var(--steel);
+    padding-left: 0.9rem;
+}
+.recommend-card.cheap .recommend-title {
+    color: var(--steel);
+}
+
+.recommend-card.station {
+    border-left: 3px solid var(--brass-dark);
+    padding-left: 0.9rem;
+}
+.recommend-card.station .recommend-title {
+    color: var(--brass-dark);
+}
+
+.recommend-card.value {
+    border-left: 3px solid var(--berry);
+    padding-left: 0.9rem;
+}
+.recommend-card.value .recommend-title {
+    color: var(--berry);
+}
+
+.recommend-name {
+    color: var(--text-strong);
+    font-size: 1.05rem;
+    font-weight: 750;
+}
+
+.recommend-value {
+    margin-top: 0.1rem;
+    color: var(--text-strong);
+    font-family: var(--font-mono);
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.recommend-sub {
+    margin-top: 0.15rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
 }
 
 
@@ -397,18 +535,23 @@ div[data-testid="stMetricValue"] {
 
 button[data-baseweb="tab"] {
     color: var(--text-muted);
-
     font-size: 0.9rem;
     font-weight: 650;
-
-    padding-left: 0.8rem;
-    padding-right: 0.8rem;
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
 }
 
-
 button[data-baseweb="tab"][aria-selected="true"] {
-    color: var(--primary);
+    color: var(--steel);
     font-weight: 750;
+}
+
+div[data-baseweb="tab-highlight"] {
+    background-color: var(--steel) !important;
+}
+
+div[data-baseweb="tab-border"] {
+    background-color: var(--border-soft) !important;
 }
 
 
@@ -418,11 +561,8 @@ button[data-baseweb="tab"][aria-selected="true"] {
 
 [data-testid="stDataFrame"] {
     border: 1px solid var(--border);
-
-    border-radius: 12px;
-
+    border-radius: var(--radius-md);
     overflow: hidden;
-
     box-shadow: var(--shadow-sm);
 }
 
@@ -433,18 +573,29 @@ button[data-baseweb="tab"][aria-selected="true"] {
 
 div[data-baseweb="select"] > div {
     border-color: var(--border);
-
     border-radius: 9px;
 }
 
-
 div[data-baseweb="select"] > div:hover {
-    border-color: #94a3b8;
+    border-color: var(--border-strong);
 }
 
+div[data-baseweb="select"] > div:focus-within {
+    border-color: var(--steel) !important;
+    box-shadow: 0 0 0 1px var(--steel) !important;
+}
 
 [data-testid="stSlider"] {
-    padding-top: 0.25rem;
+    padding-top: 0.3rem;
+}
+
+div[data-baseweb="slider"] div[role="slider"] {
+    background-color: var(--steel) !important;
+    border-color: var(--steel) !important;
+}
+
+div[data-testid="stTickBar"] {
+    display: none;
 }
 
 
@@ -454,13 +605,23 @@ div[data-baseweb="select"] > div:hover {
 
 section[data-testid="stSidebar"] {
     background: var(--surface);
-
     border-right: 1px solid var(--border);
 }
 
-
 section[data-testid="stSidebar"] > div {
-    padding-top: 1.25rem;
+    padding-top: 1.4rem;
+}
+
+section[data-testid="stSidebar"] h2 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-strong);
+}
+
+section[data-testid="stSidebar"] strong {
+    color: var(--ink-soft);
+    font-size: 0.85rem;
 }
 
 
@@ -469,12 +630,10 @@ section[data-testid="stSidebar"] > div {
    ========================================================= */
 
 hr {
-    margin-top: 0.8rem;
-    margin-bottom: 0.8rem;
-
+    margin-top: 0.9rem;
+    margin-bottom: 0.9rem;
     border: none;
-
-    border-top: 1px solid var(--border-light);
+    border-top: 1px solid var(--border-soft);
 }
 
 
@@ -484,27 +643,7 @@ hr {
 
 div[data-testid="stAlert"] {
     border-radius: 10px;
-}
-
-
-/* =========================================================
-   BUTTON GENERAL
-   ========================================================= */
-
-.stButton > button {
-    border-radius: 9px;
-
-    font-weight: 650;
-
-    transition:
-        background 0.15s ease,
-        border-color 0.15s ease,
-        transform 0.15s ease;
-}
-
-
-.stButton > button:hover {
-    transform: translateY(-1px);
+    font-size: 0.88rem;
 }
 
 
@@ -513,7 +652,6 @@ div[data-testid="stAlert"] {
    ========================================================= */
 
 @media (max-width: 900px) {
-
     .main .block-container {
         padding-top: 0.75rem;
         padding-left: 1rem;
@@ -525,7 +663,7 @@ div[data-testid="stAlert"] {
     }
 
     .start-title {
-        font-size: 2rem;
+        font-size: 1.9rem;
     }
 
     .start-description {
@@ -537,211 +675,42 @@ div[data-testid="stAlert"] {
         padding: 1.4rem;
     }
 
-    .dashboard-title {
-        font-size: 1.55rem;
+    .step-flow {
+        gap: 0.35rem;
     }
 
-    div[data-testid="stMetric"] {
-        min-height: 90px;
-        padding: 0.85rem;
+    .step-item {
+        font-size: 0.72rem;
+    }
+
+    .step-sep {
+        width: 14px;
+    }
+
+    .dashboard-title {
+        font-size: 1.5rem;
     }
 
     div[data-testid="stMetricValue"] {
         font-size: 1.3rem !important;
     }
+
+    div[data-testid="stVerticalBlockBorderWrapper"] > div {
+        padding: 0.9rem 1rem;
+    }
 }
+
 
 /* =========================================================
-   추천 KPI 카드
+   접근성 — 모션 최소화 선호 시
    ========================================================= */
 
-.recommend-card {
-    background: #ffffff;
-
-    border: 1px solid #e2e8f0;
-    border-left: 4px solid;
-
-    border-radius: 12px;
-
-    padding: 1rem 1.1rem;
-
-    min-height: 125px;
-
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-
-    box-sizing: border-box;
-}
-
-
-/* 가장 저렴한 지역 */
-
-.recommend-cheap {
-    border-left-color: #0f766e;
-}
-
-
-/* 가장 저렴한 역 */
-
-.recommend-station {
-    border-left-color: #2563eb;
-}
-
-
-/* 가성비 1위 */
-
-.recommend-value-card {
-    border-left-color: #d97706;
-}
-
-
-/* 카드 제목 */
-
-.recommend-label {
-    color: #64748b;
-
-    font-size: 0.8rem;
-    font-weight: 650;
-
-    line-height: 1.3;
-}
-
-
-/* 지역 / 역 이름 */
-
-.recommend-name {
-    margin-top: 0.45rem;
-
-    color: #111827;
-
-    font-size: 1.05rem;
-    font-weight: 750;
-
-    line-height: 1.3;
-}
-
-
-/* 금액 */
-
-.recommend-value {
-    margin-top: 0.15rem;
-
-    color: #111827;
-
-    font-size: 1.4rem;
-    font-weight: 800;
-
-    line-height: 1.3;
-
-    letter-spacing: -0.03em;
-}
-
-
-/* 거래건수 / 거리 */
-
-.recommend-sub {
-    margin-top: 0.2rem;
-
-    color: #64748b;
-
-    font-size: 0.78rem;
-
-    line-height: 1.3;
-}
-
-/* =========================================================
-   추천 카드
-   ========================================================= */
-
-.recommend-card {
-    padding: 0.2rem 0;
-}
-
-
-/* 제목 */
-
-.recommend-title {
-    font-size: 0.85rem;
-    font-weight: 700;
-
-    margin-bottom: 0.5rem;
-}
-
-
-/* 지역 */
-
-.recommend-card.cheap {
-    border-left: 4px solid #0f766e;
-    padding-left: 0.9rem;
-}
-
-.recommend-card.cheap .recommend-title {
-    color: #0f766e;
-}
-
-
-/* 역 */
-
-.recommend-card.station {
-    border-left: 4px solid #2563eb;
-    padding-left: 0.9rem;
-}
-
-.recommend-card.station .recommend-title {
-    color: #2563eb;
-}
-
-
-/* 가성비 */
-
-.recommend-card.value {
-    border-left: 4px solid #d97706;
-    padding-left: 0.9rem;
-}
-
-.recommend-card.value .recommend-title {
-    color: #d97706;
-}
-
-
-/* 이름 */
-
-.recommend-name {
-    color: #111827;
-
-    font-size: 1.05rem;
-    font-weight: 750;
-}
-
-
-/* 금액 */
-
-.recommend-value {
-    margin-top: 0.1rem;
-
-    color: #111827;
-
-    font-size: 1.4rem;
-    font-weight: 800;
-
-    letter-spacing: -0.03em;
-}
-
-
-/* 보조 정보 */
-
-.recommend-sub {
-    margin-top: 0.15rem;
-
-    color: #64748b;
-
-    font-size: 0.8rem;
-}
-
-/* 기본 KPI */
-div[data-testid="stMetric"] {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 0.9rem 1rem;
-    box-shadow: none;
+@media (prefers-reduced-motion: reduce) {
+    .start-card,
+    .start-card::before,
+    .start-button button,
+    .stButton > button,
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        transition: none !important;
+    }
 }
