@@ -11,28 +11,19 @@ def render_start():
     # =====================================================
 
     st.markdown(
-        """
-        <div class="start-page">
-            <div class="start-header">
-
-                <div class="start-eyebrow">
-                    SEOUL RENTAL MARKET · 2025
-                </div>
-
-                <h1 class="start-title">
-                    서울 청년 월세 시장을 분석하세요
-                </h1>
-
-                <p class="start-description">
-                    분석 기준을 선택하면 다음 단계에서
-                    원하는 조건을 설정하고 상세 데이터를 확인할 수 있습니다.
-                </p>
-
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
+        "### SEOUL RENTAL MARKET · 2025"
     )
+    
+    st.markdown(
+        "## 서울 청년 월세 시장을 분석하세요"
+    )
+    
+    st.caption(
+        "분석 기준을 선택하면 다음 단계에서 "
+        "원하는 조건을 설정하고 상세 데이터를 확인할 수 있습니다."
+    )
+    
+    st.markdown("")
 
     # =====================================================
     # CHOICES
