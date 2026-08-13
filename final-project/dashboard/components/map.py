@@ -35,11 +35,11 @@ SUBWAY_STATIONS_PATH = (
 # 중요:
 # Layer마다 tooltip을 넣지 않고
 # Deck 전체에 하나만 설정합니다.
-# 각 데이터에는 tooltip_html 컬럼을 넣습니다.
+# 각 데이터에는 tooltip_text 컬럼을 넣습니다.
 # =========================================================
 
 DECK_TOOLTIP = {
-    "html": "{tooltip_html}",
+    "text": "{tooltip_text}",
     "style": {
         "backgroundColor": "white",
         "color": "#172033",
@@ -155,7 +155,6 @@ def _display_value(value):
 # =========================================================
 # 거래 Tooltip
 # =========================================================
-
 def _make_transaction_tooltip(row):
 
     district = _display_value(
@@ -186,19 +185,14 @@ def _make_transaction_tooltip(row):
         row.get("최근접역_거리(m)")
     )
 
-    # -----------------------------------------------------
-    # 복잡한 div / CSS를 사용하지 않습니다.
-    # PyDeck Tooltip 호환성을 위해 단순 HTML만 사용합니다.
-    # -----------------------------------------------------
-
     return (
-        "<b>🏠 거래 정보</b><br/>"
-        f"자치구: {district}<br/>"
-        f"최근접역: {station}<br/>"
-        f"호선: {line}<br/>"
-        f"월세: {rent}만원<br/>"
-        f"보증금: {deposit}만원<br/>"
-        f"면적: {area}㎡<br/>"
+        "🏠 거래 정보\n"
+        f"자치구: {district}\n"
+        f"최근접역: {station}\n"
+        f"호선: {line}\n"
+        f"월세: {rent}만원\n"
+        f"보증금: {deposit}만원\n"
+        f"면적: {area}㎡\n"
         f"역까지 거리: {distance}m"
     )
 
@@ -213,7 +207,7 @@ def _make_station_tooltip(
 ):
 
     return (
-        f"<b>🚇 {station}</b><br/>"
+        f"🚇 {station}\n"
         f"호선: {lines}"
     )
 
@@ -227,7 +221,7 @@ def _make_district_tooltip(
 ):
 
     return (
-        "<b>📍 자치구</b><br/>"
+        "📍 자치구\n"
         f"자치구: {district_name}"
     )
 
@@ -518,7 +512,7 @@ def _prepare_station_display_data(
                 "color_r",
                 "color_g",
                 "color_b",
-                "tooltip_html",
+                "tooltip_text",
             ]
         )
 
@@ -567,7 +561,7 @@ def _prepare_station_display_data(
                 "color_r": color[0],
                 "color_g": color[1],
                 "color_b": color[2],
-                "tooltip_html": (
+                "tooltip_text": (
                     _make_station_tooltip(
                         station,
                         ", ".join(lines),
@@ -711,13 +705,13 @@ def _prepare_transaction_data(
 
         map_df = map_df.copy()
 
-        map_df["tooltip_html"] = []
+        map_df["tooltip_text"] = []
 
         return map_df
 
     map_df = map_df.copy()
 
-    map_df["tooltip_html"] = map_df.apply(
+    map_df["tooltip_text"] = map_df.apply(
         _make_transaction_tooltip,
         axis=1,
     )
@@ -878,10 +872,10 @@ def render_map(
                     ),
                     "district_name": geo_name,
 
-                    # Tooltip
-                    "tooltip_html": (
-                        _make_district_tooltip(
-                            geo_name
+                    "tooltip_text": (
+                        _make_station_tooltip(
+                            station,
+                            ", ".join(lines),
                         )
                     ),
                 }
@@ -1416,7 +1410,7 @@ def render_map(
 
         if not station_info.empty:
 
-            station_info["tooltip_html"] = (
+            station_info["tooltip_text"] = (
                 station_info.apply(
                     lambda row:
                     _make_station_tooltip(
