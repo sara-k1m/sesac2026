@@ -32,10 +32,7 @@ SUBWAY_STATIONS_PATH = (
 # =========================================================
 # 전체 Tooltip
 #
-# 중요:
-# Layer마다 tooltip을 넣지 않고
-# Deck 전체에 하나만 설정합니다.
-# 각 데이터에는 tooltip_text 컬럼을 넣습니다.
+# HTML을 사용하지 않고 text 방식 사용
 # =========================================================
 
 DECK_TOOLTIP = {
@@ -146,8 +143,16 @@ def _build_color_palette(line_groups):
 
 def _display_value(value):
 
-    if pd.isna(value):
+    if value is None:
         return "-"
+
+    try:
+
+        if pd.isna(value):
+            return "-"
+
+    except Exception:
+        pass
 
     return str(value)
 
@@ -155,6 +160,7 @@ def _display_value(value):
 # =========================================================
 # 거래 Tooltip
 # =========================================================
+
 def _make_transaction_tooltip(row):
 
     district = _display_value(
@@ -206,6 +212,9 @@ def _make_station_tooltip(
     lines,
 ):
 
+    station = _display_value(station)
+    lines = _display_value(lines)
+
     return (
         f"🚇 {station}\n"
         f"호선: {lines}"
@@ -219,6 +228,10 @@ def _make_station_tooltip(
 def _make_district_tooltip(
     district_name,
 ):
+
+    district_name = _display_value(
+        district_name
+    )
 
     return (
         "📍 자치구\n"
@@ -452,18 +465,20 @@ def _filter_subway_by_line(
 ):
 
     if subway.empty:
+
         return subway.copy()
 
     if not selected_line:
+
         return subway.copy()
 
     selected_line = str(
         selected_line
     ).strip()
 
-    # -----------------------------------------------------
-    # 정확히 일치하는 호선 우선
-    # -----------------------------------------------------
+    # =====================================================
+    # 정확히 일치
+    # =====================================================
 
     exact = subway[
         subway["line"]
@@ -474,9 +489,9 @@ def _filter_subway_by_line(
 
         return exact
 
-    # -----------------------------------------------------
-    # 없으면 포함 검색
-    # -----------------------------------------------------
+    # =====================================================
+    # 포함 검색
+    # =====================================================
 
     filtered = subway[
         subway["line"]
@@ -533,9 +548,12 @@ def _prepare_station_display_data(
             .tolist()
         )
 
-        # -------------------------------------------------
+        # =================================================
         # 대표 색상
-        # -------------------------------------------------
+        #
+        # 여러 호선이 만나는 역의 경우
+        # 첫 번째 호선 색상을 대표색으로 사용
+        # =================================================
 
         if len(group) > 0:
 
@@ -610,7 +628,7 @@ def _get_subway_station_layers(
 
         get_position="[lon, lat]",
 
-        # 기존보다 크게
+        # 역 원 크기
         get_radius=55,
 
         # 호선 고유 색상
@@ -665,7 +683,7 @@ def _get_subway_station_layers(
             255,
         ],
 
-        # 역 원 아래쪽에 이름 표시
+        # 역 원 아래쪽
         get_pixel_offset=[
             0,
             34,
@@ -677,8 +695,7 @@ def _get_subway_station_layers(
 
         billboard=True,
 
-        # 중요:
-        # 텍스트는 hover 대상이 아님
+        # 텍스트는 hover 대상 아님
         pickable=False,
 
         font_family="Arial, sans-serif",
@@ -701,15 +718,15 @@ def _prepare_transaction_data(
     map_df
 ):
 
+    map_df = map_df.copy()
+
     if map_df.empty:
 
-        map_df = map_df.copy()
-
-        map_df["tooltip_text"] = []
+        map_df["tooltip_text"] = pd.Series(
+            dtype="object"
+        )
 
         return map_df
-
-    map_df = map_df.copy()
 
     map_df["tooltip_text"] = map_df.apply(
         _make_transaction_tooltip,
@@ -863,6 +880,11 @@ def render_map(
 
                 feature_copy = feature.copy()
 
+                # -------------------------------------------------
+                # ★ 중요
+                # 자치구에는 자치구 Tooltip을 넣어야 함
+                # -------------------------------------------------
+
                 feature_copy[
                     "properties"
                 ] = {
@@ -871,11 +893,9 @@ def render_map(
                         {}
                     ),
                     "district_name": geo_name,
-
                     "tooltip_text": (
-                        _make_station_tooltip(
-                            station,
-                            ", ".join(lines),
+                        _make_district_tooltip(
+                            geo_name
                         )
                     ),
                 }
@@ -915,6 +935,51 @@ def render_map(
             center_lon = (
                 map_df["경도"].mean()
             )
+
+        elif selected_features:
+
+            # GeoJSON bounds를 이용한 중심 계산
+            try:
+
+                geometry_list = [
+                    shape(
+                        feature["geometry"]
+                    )
+                    for feature
+                    in selected_features
+                    if feature.get(
+                        "geometry"
+                    )
+                ]
+
+                if geometry_list:
+
+                    merged_bounds = geometry_list[0]
+
+                    for geom in geometry_list[1:]:
+
+                        merged_bounds = (
+                            merged_bounds.union(
+                                geom
+                            )
+                        )
+
+                    center = (
+                        merged_bounds.centroid
+                    )
+
+                    center_lon = center.x
+                    center_lat = center.y
+
+                else:
+
+                    center_lat = 37.5172
+                    center_lon = 127.0473
+
+            except Exception:
+
+                center_lat = 37.5172
+                center_lon = 127.0473
 
         else:
 
@@ -1000,6 +1065,10 @@ def render_map(
             pitch=0,
         )
 
+        # =================================================
+        # Layer 순서
+        # =================================================
+
         layers = [
             # 자치구
             boundary_layer,
@@ -1013,6 +1082,10 @@ def render_map(
             point_layer,
         ]
 
+        # =================================================
+        # 지도
+        # =================================================
+
         st.pydeck_chart(
             pdk.Deck(
                 layers=layers,
@@ -1023,7 +1096,6 @@ def render_map(
 
                 map_style="light",
 
-                # ★ Tooltip
                 tooltip=DECK_TOOLTIP,
             ),
 
@@ -1064,10 +1136,7 @@ def render_map(
         )
 
         # =================================================
-        # ★★★ 중요 ★★★
-        #
-        # 전체 역이 아니라
-        # 선택한 호선의 역만 필터링
+        # 선택한 호선 역만 필터링
         # =================================================
 
         subway_line = (
@@ -1143,7 +1212,7 @@ def render_map(
         )
 
         # =================================================
-        # 선택 호선 역만 Layer 생성
+        # 선택 호선 역 Layer
         # =================================================
 
         subway_layers = (
@@ -1164,7 +1233,7 @@ def render_map(
         )
 
         layers = [
-            # 해당 호선 역
+            # 해당 호선 역만
             *subway_layers,
 
             # 거래점
@@ -1181,7 +1250,6 @@ def render_map(
 
                 map_style="light",
 
-                # ★ Tooltip
                 tooltip=DECK_TOOLTIP,
             ),
 
@@ -1254,6 +1322,7 @@ def render_map(
                     station_info_from_df[
                         "최근접역_경도"
                     ].iloc[0]
+
                 )
 
             else:
@@ -1347,15 +1416,19 @@ def render_map(
                 [
                     {
                         "station": selected_place,
+
                         "lat": station_info[
                             "lat"
                         ].mean(),
+
                         "lon": station_info[
                             "lon"
                         ].mean(),
+
                         "lines": ", ".join(
                             station_lines
                         ),
+
                         "color_r": station_color[0],
                         "color_g": station_color[1],
                         "color_b": station_color[2],
@@ -1501,6 +1574,7 @@ def render_map(
 
                 billboard=True,
 
+                # 텍스트는 Tooltip을 가로채지 않음
                 pickable=False,
 
                 font_family="Arial, sans-serif",
@@ -1541,7 +1615,6 @@ def render_map(
 
                 map_style="light",
 
-                # ★ Tooltip
                 tooltip=DECK_TOOLTIP,
             ),
 
