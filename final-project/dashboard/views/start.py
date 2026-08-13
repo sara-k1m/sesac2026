@@ -50,8 +50,6 @@ def render_start():
 
             st.markdown("### 🏙️")
 
-            st.caption("DISTRICT")
-
             st.markdown(
                 "#### 자치구별 보기"
             )
@@ -62,8 +60,6 @@ def render_start():
             )
 
             st.markdown("")
-
-            st.caption("25 DISTRICTS")
 
             if st.button(
                 "자치구별 분석 시작 →",
@@ -85,8 +81,6 @@ def render_start():
 
             st.markdown("### 🚇")
 
-            st.caption("SUBWAY LINE")
-
             st.markdown(
                 "#### 지하철 노선별 보기"
             )
@@ -97,8 +91,6 @@ def render_start():
             )
 
             st.markdown("")
-
-            st.caption("SUBWAY NETWORK")
 
             if st.button(
                 "노선별 분석 시작 →",
@@ -120,8 +112,6 @@ def render_start():
 
             st.markdown("### 📍")
 
-            st.caption("STATION")
-
             st.markdown(
                 "#### 지하철역별 보기"
             )
@@ -132,8 +122,6 @@ def render_start():
             )
 
             st.markdown("")
-
-            st.caption("STATION LEVEL")
 
             if st.button(
                 "역별 분석 시작 →",
