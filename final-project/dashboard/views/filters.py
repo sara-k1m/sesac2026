@@ -63,6 +63,10 @@ def render_filters(
         "### 1. 분석 대상"
     )
 
+    # -----------------------------------------------------
+    # 자치구
+    # -----------------------------------------------------
+
     if view_type == "district":
 
         selected_place = st.selectbox(
@@ -77,6 +81,10 @@ def render_filters(
             ),
             placeholder="자치구를 선택하세요",
         )
+
+    # -----------------------------------------------------
+    # 노선
+    # -----------------------------------------------------
 
     elif view_type == "line":
 
@@ -93,11 +101,11 @@ def render_filters(
             placeholder="지하철 노선을 선택하세요",
         )
 
-    else:
+    # -----------------------------------------------------
+    # 역
+    # -----------------------------------------------------
 
-        # -------------------------------------------------
-        # 역별 분석 — 먼저 호선 선택
-        # -------------------------------------------------
+    else:
 
         station_lines = sorted(
             df["최근접역_호선"]
@@ -148,6 +156,10 @@ def render_filters(
 
     col1, col2 = st.columns(2)
 
+    # -----------------------------------------------------
+    # 월세
+    # -----------------------------------------------------
+
     with col1:
 
         selected_rent = st.slider(
@@ -161,12 +173,25 @@ def render_filters(
                 ),
                 min(
                     1000,
-                    st.session_state.selected_rent[1],
+                    max(
+                        300,
+                        st.session_state.selected_rent[1],
+                    ),
                 ),
             ),
             step=10,
             help="10만원 단위로 선택할 수 있습니다.",
         )
+
+        st.caption(
+            f"선택 범위  ·  "
+            f"{selected_rent[0]:,}만원 ~ "
+            f"{selected_rent[1]:,}만원"
+        )
+
+    # -----------------------------------------------------
+    # 보증금
+    # -----------------------------------------------------
 
     with col2:
 
@@ -185,7 +210,31 @@ def render_filters(
                 ),
             ),
             step=100,
-            help="100만원 단위로 선택할 수 있습니다.",
+            help="100만원 단위로 선택할 수 있습니다. 최대 1억원입니다.",
+        )
+
+        # ---------------------------------------------
+        # 보증금 표시용 함수
+        # ---------------------------------------------
+
+        def format_deposit(value):
+
+            if value >= 10000:
+
+                억 = value // 10000
+                만원 = value % 10000
+
+                if 만원 == 0:
+                    return f"{억}억원"
+
+                return f"{억}억 {만원:,}만원"
+
+            return f"{value:,}만원"
+
+        st.caption(
+            f"선택 범위  ·  "
+            f"{format_deposit(selected_deposit[0])} ~ "
+            f"{format_deposit(selected_deposit[1])}"
         )
 
     # =====================================================
@@ -198,11 +247,96 @@ def render_filters(
         "### 3. 주거 조건"
     )
 
-    selected_area = st.slider(
-        "임대면적 (㎡)",
-        min_value=area_min,
-        max_value=area_max,
-        value=st.session_state.selected_area,
+    # -----------------------------------------------------
+    # 평 ↔ ㎡ 변환
+    # -----------------------------------------------------
+
+    PYUNG_TO_SQM = 3.3058
+
+    # 기존 session_state의 ㎡ 값을 평으로 변환
+    saved_area_min = round(
+        st.session_state.selected_area[0]
+        / PYUNG_TO_SQM
+    )
+
+    saved_area_max = round(
+        st.session_state.selected_area[1]
+        / PYUNG_TO_SQM
+    )
+
+    # 실제 데이터 범위를 평으로 변환
+    data_area_min = max(
+        1,
+        int(area_min / PYUNG_TO_SQM),
+    )
+
+    data_area_max = min(
+        60,
+        int(area_max / PYUNG_TO_SQM),
+    )
+
+    # 데이터 범위가 비정상적인 경우 방어
+    data_area_max = max(
+        data_area_min,
+        data_area_max,
+    )
+
+    # 저장된 기본값을 실제 데이터 범위 안으로 보정
+    saved_area_min = max(
+        data_area_min,
+        min(
+            data_area_max,
+            saved_area_min,
+        ),
+    )
+
+    saved_area_max = max(
+        saved_area_min,
+        min(
+            data_area_max,
+            saved_area_max,
+        ),
+    )
+
+    # -----------------------------------------------------
+    # 평 단위 슬라이더
+    # -----------------------------------------------------
+
+    selected_area_pyung = st.slider(
+        "임대면적 (평)",
+        min_value=data_area_min,
+        max_value=data_area_max,
+        value=(
+            saved_area_min,
+            saved_area_max,
+        ),
+        step=1,
+        help="1평 단위로 선택할 수 있으며 최대 60평까지 선택할 수 있습니다.",
+    )
+
+    # -----------------------------------------------------
+    # 평 → ㎡ 변환
+    # -----------------------------------------------------
+
+    selected_area = (
+        round(
+            selected_area_pyung[0]
+            * PYUNG_TO_SQM,
+            2,
+        ),
+        round(
+            selected_area_pyung[1]
+            * PYUNG_TO_SQM,
+            2,
+        ),
+    )
+
+    st.caption(
+        f"선택 범위  ·  "
+        f"{selected_area_pyung[0]}평 "
+        f"({selected_area[0]:,.1f}㎡) ~ "
+        f"{selected_area_pyung[1]}평 "
+        f"({selected_area[1]:,.1f}㎡)"
     )
 
     # =====================================================
@@ -228,7 +362,9 @@ def render_filters(
 
     st.markdown("")
 
-    col1, col2, col3 = st.columns([1, 2, 1])
+    col1, col2, col3 = st.columns(
+        [1, 2, 1]
+    )
 
     # -----------------------------------------------------
     # 이전 단계
@@ -256,15 +392,34 @@ def render_filters(
             type="primary",
         ):
 
-            st.session_state.selected_place = selected_place
+            # ---------------------------------------------
+            # 선택값 저장
+            # ---------------------------------------------
 
-            st.session_state.selected_rent = selected_rent
+            st.session_state.selected_place = (
+                selected_place
+            )
 
-            st.session_state.selected_deposit = selected_deposit
+            st.session_state.selected_rent = (
+                selected_rent
+            )
 
-            st.session_state.selected_area = selected_area
+            st.session_state.selected_deposit = (
+                selected_deposit
+            )
 
-            st.session_state.selected_distance = selected_distance
+            # 내부 저장값은 ㎡ 기준
+            st.session_state.selected_area = (
+                selected_area
+            )
+
+            st.session_state.selected_distance = (
+                selected_distance
+            )
+
+            # ---------------------------------------------
+            # Page 3
+            # ---------------------------------------------
 
             st.session_state.page = 3
 
